@@ -1,0 +1,352 @@
+# Draft engineering selection; null evidence blocks production integration. No protocol change.
+schema_version: frontend-build-registry.v1
+purpose: NOW-01 build selection; NOW-08 contract gate; not a browser protocol or roadmap
+design_file: ai-devops-frontend-design-v1.2-for-platform-v1.6.md
+release_profile: postgres-minimal
+milestone: L2
+status: draft_requires_confirmation
+task_refs:
+- NOW-01
+- NOW-08
+baselines:
+  B01:
+    file: ai-devops-platform-design-v1.6.md
+    sha256: 6d8c80e5ec410a421a4b6bad19c4a7580cfce679a011f7d6024c33c33383fd6d
+  B02:
+    file: ai-devops-frontend-L2-contract-v0.1.md
+    sha256: 8ff35c0ddb8c3208a03c8be6f6ef610e0def68e8c46edd41b6ec98054f1a76c6
+    browser_contract: web-l2-v1
+    snapshot_protocol: snapshot-sse-v1
+scope_confirmation:
+  product_approval_ref: null
+  frontend_approval_ref: null
+session_model: organization_bound_single_tenant
+tenant_selection_header_enabled: false
+contract_gate:
+  required_d_subsets:
+  - D01
+  - D02
+  - D03
+  - D04
+  - D07
+  - D09
+  - D10
+  - D16
+  d01_mode: known_resource_and_exact_request_replay_no_new_receipt_service
+  d09_mode: read_only_registered_configuration
+  d10_mode: one_channel_minimal_read
+  openapi_commit: null
+  schema_manifest_sha256: null
+  generated_client_sha256: null
+  frontend_signoff_ref: null
+  backend_signoff_ref: null
+  backend_contract_test_ref: null
+  b02_compatibility_review_ref: null
+  status: pending
+  production_integration_allowed: false
+action_allowlist:
+- id: review.rerun
+  method: POST
+  path: /api/v1/reviews/{id}/reruns
+- id: review.retry_publication
+  method: POST
+  path: /api/v1/reviews/{id}/retry-publication
+- id: operation.reconcile
+  method: POST
+  path: /api/v1/external-operations/{id}/reconcile
+- id: operation.retry_request
+  method: POST
+  path: /api/v1/external-operations/{id}/retry-requests
+- id: workflow.cancel
+  method: POST
+  path: /api/v1/workflows/{id}/cancel
+- id: auth.logout
+  method: POST
+  path: /auth/logout
+authentication_flow_only:
+- method: POST
+  path: /auth/{provider_id}/start
+- method: GET
+  path: /auth/{provider_id}/callback
+sse_d_dependency:
+  id: D07
+  applies_to: all_active_pages_via_kernel
+  new_route: false
+pages:
+- page_id: PG01
+  in_build: true
+  mount: route
+  routes:
+  - /login
+  - /session-expired
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D16
+  scope_note: SSO 与会话外壳；不加载任何业务页
+- page_id: PG02
+  in_build: true
+  mount: route
+  routes:
+  - /
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D04
+  - D10
+  - D16
+  scope_note: 只组合 Review/操作/通知的授权列表，无跨域聚合服务
+- page_id: PG03
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3+ 本人待办；D05 未进首发
+- page_id: PG04
+  in_build: true
+  mount: route
+  routes:
+  - /reviews
+  - /reviews/:id
+  embedded_in: []
+  required_d_subsets:
+  - D01
+  - D02
+  - D03
+  - D04
+  - D16
+  scope_note: 列表/详情、单条摘要；仅 rerun/retry-publication/cancel，关联查证复用 PG17
+- page_id: PG05
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 scan.reporting；无 scan-schedules 路由/代码/请求
+- page_id: PG06
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 scan.reporting；无扫描报告模块
+- page_id: PG07
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 scan.auto_issues；无 Case 模块
+- page_id: PG08
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L5 人工导入
+- page_id: PG09
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L5 ObservationReport
+- page_id: PG10
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L5 原生交接/L6 扩展；仅核心兜底处理未交付深链
+- page_id: PG11
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L4 Incident
+- page_id: PG12
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L4 人工恢复/L7 自动验证
+- page_id: PG13
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 repair 审批；无待办/批准按钮
+- page_id: PG14
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 repair 共享修复详情
+- page_id: PG15
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 repair AgentRun
+- page_id: PG16
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 独立工作流页；L2 只在 PG04/17 读当前短步骤
+- page_id: PG17
+  in_build: true
+  mount: route
+  routes:
+  - /operations
+  - /operations/:id
+  embedded_in: []
+  required_d_subsets:
+  - D01
+  - D02
+  - D03
+  - D04
+  - D16
+  scope_note: 统一操作/Attempt/证据；仅查证和安全重试申请
+- page_id: PG18
+  in_build: true
+  mount: route
+  routes:
+  - /notifications
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D04
+  - D10
+  - D16
+  scope_note: 单通道列表；详情在本页展开已有 DTO，独立 /:id 不默认注册
+- page_id: PG19
+  in_build: true
+  mount: route
+  routes:
+  - /projects
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D04
+  - D16
+  scope_note: 已授权列表/行内摘要；无新建、保存、独立详情 API 假设
+- page_id: PG20
+  in_build: true
+  mount: route
+  routes:
+  - /repositories
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D04
+  - D09
+  - D16
+  scope_note: 已登记 GitHub 列表/行内只读状态；无行级开关、登记/测试写入
+- page_id: PG21
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L4 服务/部署目录
+- page_id: PG22
+  in_build: true
+  mount: route
+  routes:
+  - /settings
+  embedded_in: []
+  required_d_subsets:
+  - D02
+  - D09
+  - D16
+  scope_note: GitHub/IdP/唯一通知状态及 scope 摘要；无通用配置编辑器
+- page_id: PG23
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L3 单 CLI Profile；pending 产品始终不注册
+- page_id: PG24
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L5 来源映射
+- page_id: PG25
+  in_build: true
+  mount: embedded
+  routes: []
+  embedded_in:
+  - PG22
+  required_d_subsets:
+  - D02
+  - D09
+  - D10
+  - D16
+  scope_note: 只读；不注册 /settings/notifications，不创建通道/测试消息
+- page_id: PG26
+  in_build: true
+  mount: embedded
+  routes: []
+  embedded_in:
+  - PG22
+  - app-shell
+  required_d_subsets:
+  - D02
+  - D09
+  - D16
+  scope_note: 当前身份/租户和退出；不注册成员、绑定或 IdP 管理页
+- page_id: PG27
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: 策略/预算管理后续；L2 有效限制仅作为 PG22 只读字段
+- page_id: PG28
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: 模块安装/定义管理后续；L2 无 Wait/Feed/迁移管理入口
+- page_id: PG29
+  in_build: false
+  mount: excluded
+  routes: []
+  embedded_in: []
+  required_d_subsets: []
+  scope_note: L7 插件
+- page_id: PG30
+  in_build: true
+  mount: embedded
+  routes: []
+  embedded_in:
+  - PG04
+  - PG17
+  required_d_subsets:
+  - D02
+  - D04
+  - D16
+  scope_note: 仅已有资源 DTO/明细的历史；不注册 /audit 或 /system/health 聚合
+- page_id: PG31
+  in_build: true
+  mount: route
+  routes:
+  - /not-found
+  - /access-unavailable
+  - /upgrade-required
+  embedded_in: []
+  required_d_subsets:
+  - D16
+  scope_note: 静态安全兜底；不探测未交付模块
