@@ -1,4 +1,4 @@
-# L0/L1 技术实施方案（VTR-6，评审稿 v0.1）
+# L0/L1 技术实施方案（VTR-6，评审稿 v0.1-r1）
 
 > 面向实施代理：由队长按任务卡逐项安排执行与复核；本阶段不启动开发，不创建后续子任务。技能建议的执行子技能不构成本阶段启动开发的授权。
 
@@ -10,7 +10,7 @@
 
 **唯一设计：** ai-devops-platform-design-v1.7.md；HEAD=f5a815bf08d356a6b64bdf2a2fbe0161d28dda2e；文件 SHA256=f7b8225ad26a5d390b06380fd627e3b292fd609e3c25539b5b62ba75628cbb85。核查日期 2026-09-16。
 
-**状态：** 方案已细化为可评审任务和契约；外部实施事实及本稿第 10 节决策未关闭，不能称为已冻结或准予开发。全部 L0/PG 运行门禁均未执行。本稿不是探针报告、签署、DDL 或产品实现。
+**状态：** 方案已细化为可评审任务和契约；Q2/Q3已于2026-09-16获用户确认；Q1资源入口和外部实施事实仍未关闭，不能称为已冻结或准予开发。全部 L0/PG 运行门禁均未执行。本稿不是探针报告、签署、DDL 或产品实现。
 
 ## 1. 固定约束与依据
 
@@ -146,18 +146,18 @@ OperationSpec 必填：type/key/integration、已注册 owner 及 revision、log
 
 READ COMMITTED 为普通短事务基线。23505 后整笔回滚，不在失败事务继续查询；40001/40P01 分类后复用原键重试整个短事务。lock_timeout、statement_timeout、ctx deadline 都有界。网络 COMMIT 回执断开：返回可解释的未知提交失败，重试核查原键，不创建新 generation。不用同 statement INSERT-CTE-SELECT 的空行当作新建许可。UoW 回调不得访问全局 db 或网络。
 
-### 4.3 HTTP 契约草案（等待 Q3）
+### 4.3 HTTP 契约（Q3=1 已确认）
 
 L1 不注册 /auth、/api/v1/reviews、通知测试、Operation 管理或任意业务写 API；主设计第 24 章是分阶段蓝图。没有前后端协作或新增多服务产品契约。本次 Go 端口供同一二进制/仓库内部协作；真实 OIDC 回调的“冻结”属于 G03，不代表实现。
 
-拟仅在部署管理入口注册下列探测路由，尚未获准公开合同，待 Q3 确认；不修改现有 L2 OpenAPI/client/前端登记。
+用户在评论 01a0a8fc-6d7e-7a40-a47b-292bcfb9acee 确认Q3=1：仅在部署管理入口注册下列探测路由；不修改现有L2 OpenAPI/client/前端登记。此为合同确认，尚无接口实现或运行证据。
 
 | 路径 | 请求 | 响应 | 业务/安全规则 |
 |---|---|---|---|
 | GET /healthz | 无 body、无 query | 200 application/json，status=ok | 只反映进程存活；固定静态正文，不给实例/依赖/版本或身份资料；仅管理网络可达 |
 | GET /readyz | 无 body、无 query | 200 status=ready；未就绪 503 status=not_ready | 检查当前 core 迁移/checksum、批准 Registry、DB 有界 ping；不查未安装模块或第三方；失败不输出 DSN/SQL/secret |
 
-若 Q3 选择不新增探测路由，保留 Gin server 生命周期及 bootstrap 必需 DB/Registry 校验，通过进程退出码和同仓 Harness 验证；两条路线均禁止 DB 不可用时假启动成功。管理接口之外的未知/禁用路由不注册。API-server 必须有 request body 上限、trusted proxies、超时、恢复、脱敏；不把 gin.Context 传出请求。
+Gin server生命周期及bootstrap必需DB/Registry校验仍通过进程退出码和同仓Harness验证；禁止DB不可用时假启动成功。管理接口之外的未知/禁用路由不注册。API-server 必须有 request body 上限、trusted proxies、超时、恢复、脱敏；不把 gin.Context 传出请求。
 
 将来 L2 若出现前后端共同修改的接口，队长需在 NOW-08 开始前增加独立合同输出/校验阶段，冻结同一 OpenAPI commit；本任务不创建该阶段、不改原字段、不扩范围。
 
@@ -217,7 +217,7 @@ Schema envelope 必有 event_id、tenant_id、aggregate_id/version、event_type�
 
 API/Worker 分开连接预算；Worker 短控制事务预留连接容量，不在网络等待中占 DB tx。池总连接上限、各SQL超时、恢复扫描上界/P95/最长等待目前未定，签署前不能通过公平性门禁。不额外做多进程 Coordinator 或全局锁；优先索引/批次/退避/配额修正，持续超批准阈值才提拆分 ADR。
 
-HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复用，有界缓存；每请求注入当前身份，不共用可变 Authorization header。后台 auth/grant 每次复验，SET LOCAL 仅限事务，归还连接后不能遗留租户。RLS 档案由 Q2 决定，关闭 RLS 时同样执行 FK/Repository/对象权限隔离。
+HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复用，有界缓存；每请求注入当前身份，不共用可变 Authorization header。后台 auth/grant 每次复验，SET LOCAL 仅限事务，归还连接后不能遗留租户。Q2=1已确认：L1不启用或声明RLS，必须执行FK/Repository/当前对象权限隔离；不能把未启用RLS当作PG-G08整体不适用。
 
 恢复路径：启动核验 core 安装与注册 → 不接新写直至DB可用 → 扫描未路由 Outbox、prepared/unknown/expired sending、本地等待引用 → 保留原键/版本/期限 → 只在当前权限与证据允许时执行。历史备份恢复先禁外部写，核对不确定效果；不能清空账本重放。停机停止领取，完成或取消有界本地调用，保留未确认 sending 供下次恢复；不删除执行历史与制品。
 
@@ -289,7 +289,7 @@ HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复�
 - [ ] 建单 module，module prefix 从实际项目仓库规范确定；锁定 Go/Gin/GORM/Driver/lint 版本，禁止复制 example.com/aidevops。
 - [ ] 测试负责人建立合法与故意越界 fixture；先证明非法依赖能导致失败。
 - [ ] 后端实现 depguard+go list -deps -test -json 图/AST 及 Registry/hash 拒绝逻辑；仅白名单核心启动。
-- [ ] 验证 Q3 选定的 HTTP/生命周期契约，鉴权失败不能落入匿名业务路径。
+- [ ] 验证已确认的 /healthz、/readyz 与生命周期契约，鉴权失败不能落入匿名业务路径。
 - [ ] 检查本任务新增 fixture 后提交；规则/例外改动由架构复核。
 
 验收：
@@ -306,7 +306,7 @@ HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复�
 
 **文件：** core 三份迁移/manifest、gormpostgres UoW/Repos/sql、externalop 最小三类领取与身份复验；tests/integration/pg_gates_test.go、tests/security/auth_context_test.go、tests/fixtures/pg/。**负责人：** 后端数据库负责人、测试负责人；DevOps提供独立PG环境。**依赖：** 全部 L0 退出 + NOW-04。
 
-**输入：** 锁定PG/GORM/Driver/正式迁移、非特权角色、Q2档案、至少双连接与屏障、冻结超时/阈值。**输出：** PG-G01～12报告与最小可恢复内核；不是完整业务交付。
+**输入：** 锁定PG/GORM/Driver/正式迁移、非特权角色、已确认的无RLS档案、至少双连接与屏障、冻结超时/阈值。**输出：** PG-G01～12报告与最小可恢复内核；不是完整业务交付。
 
 - [ ] 用测试前置条件强制检查 PostgreSQL 产品/version、current_user 权限、正式迁移checksum、两独立backend PID；不满足直接失败。
 - [ ] 将主设计 DDL 示例补齐成 core 正式关系/约束，不执行可选表；验证 sending 索引及非空租约。
@@ -357,7 +357,7 @@ L1 最终退出需要第8节完整矩阵已有有效报告；“只跑新增/修
 | PG-G05 / TestPGG05 | 两连接CAS同version/epoch及旧Worker迟到 | 仅一个RowsAffected=1；0不写成功Outbox；迟到仅追加受控Observation |
 | PG-G06 / TestPGG06 | 更新false、0、NULL和允许清空字段；尝试Save/关联旁路 | 明确列完整持久化；关键状态不允许Save/自动关联/无条件Update |
 | PG-G07 / TestPGG07 | 业务写完成后强制Outbox插入失败 | 业务/效果意图/Outbox整体回滚；tx内外部网络调用数0 |
-| PG-G08 / TestPGG08 | 同资源跨tenant FK/owner关联、越权principal/对象/当前grant；连接复用 | 一律拒绝；Q2关闭RLS仍完整测试；开启时另验证RLS读/写/RETURNING及池复用，不能用owner绕过 |
+| PG-G08 / TestPGG08 | 同资源跨tenant FK/owner关联、越权principal/对象/当前grant；连接复用 | 一律拒绝；Q2=1，完整执行tenant/FK/对象权限/池复用分支；RLS专用分支标为本scope未启用，不得把PG-G08整体skip；未来声明RLS须另验读/写/RETURNING，不能用owner绕过 |
 | PG-G09 / TestPGG09 | 核心资源租约/活动操作槽竞争，新旧generation并行 | 一个有效writer；unknown未查清不能释放/改状态绕过；不新建L3修复表 |
 | PG-G10 / TestPGG10 | lock/statement timeout、ctx取消、deadlock/serialization失败 | 有界失败与完整回滚、连接可再次使用；SQLSTATE分类后整tx同键重试 |
 | PG-G11 / TestPGG11 | COMMIT已成功但客户端响应断开，重启/同请求重试 | 重查原幂等事实；资源/效果不新增；保留提交未知诊断；API不得假称受理成功 |
@@ -383,20 +383,39 @@ L1 最终退出需要第8节完整矩阵已有有效报告；“只跑新增/修
 | 性能：通知风暴/全表扫描/N+1/无限缓存 | SQL按type/action/tenant领取+索引；保留槽和DB预算；有界分页与批处理；Registry/Schema启动缓存；无N+1逐行远程授权或每行新连接；动态权限短期且执行前复验 | TestFairness、PG-G12、锁/池等待与query count；PG阈值负责人 |
 | 并发：本地epoch误当远端fencing、重复Plan/ACK/迟到覆盖 | 原key/hash、资源单写者；unknown冻结；先sending后Execute；封存CAS、Observation追加；receipt幂等 | PG-G01/02/03/05/09/11、Queue/Recovery Harness；后端内核负责人 |
 | 外部依赖：本机版本冒充已批准、OCR隐式更新/交互、机器人不可查证 | 不可变发行物/digest/原件；固定版本help；禁止POST自动重试；unsupported/ack_only明确；依赖版本/许可证/维护/漏洞在锁定时审核；不新增MQ/另一ORM | G01/G03、go.mod/go.sum与发行manifest、真实Provider契约；OCR/环境负责人 |
-| 公共契约：蓝图全量实现、未冻结API、Schema静默改版 | L1不实现L2产品API；Q3确认探测合同；第23章原端口语义；新增Schema版本显式审查；后续前后端协作先独立合同冻结 | TestRegistry/TypedSchema/CoreHealth；当前无公共签名删除/重命名，无Breaking Change实施；架构/队长 |
+| 公共契约：蓝图全量实现、未冻结API、Schema静默改版 | L1不实现L2产品API；Q3已确认管理入口探测合同；第23章原端口语义；新增Schema版本显式审查；后续前后端协作先独立合同冻结 | TestRegistry/TypedSchema/CoreHealth；当前无公共签名删除/重命名，无Breaking Change实施；架构/队长 |
 
-风险结论：选定架构可按最小影响面实施，但必须补齐证据、RLS/探测合同决策及签署。无证据的“安全/性能已通过”结论不成立。架构 lint 不是运行授权保障；HA/扩容不解决 Provider 不可查证 unknown。
+风险结论：选定架构可按最小影响面实施，但RLS/探测合同决策已关闭，仍须补齐资源事实及实际证据/签署。无证据的“安全/性能已通过”结论不成立。架构 lint 不是运行授权保障；HA/扩容不解决 Provider 不可查证 unknown。
 
-## 10. 当前决策前沿与交接
+## 10. 当前决策与资源交接（2026-09-16 修订）
 
-先前Q1～Q6产品决策全部沿用，不再询问是否扩大到L2。当前只关闭以下独立事项；本稿未实施任何选择。
+用户评论 01a0a8fc-6d7e-7a40-a47b-292bcfb9acee 已确认Q2=1、Q3=1，并询问Q1所指的“批准证据”。该询问不是环境使用许可或签署；先前Stage 0的Q1～Q6产品范围全部沿用。
 
-| 问题 | 闭合选项与建议 | 阻断 |
+| 决策 | 当前结论 | 影响 |
 |---|---|---|
-| Q1 L0事实与具名负责人从何取得 | 1. 提供已批准的项目配置/证据位置及一名能协调OCR、OIDC、飞书、产品/技术签署、测试/PG阈值的具名负责人（建议）；2. 在本issue直接补充非秘密实际值及各角色名单；3. 其他（请说明） | G01～G04真实执行/签署；不要求把秘密贴评论 |
-| Q2 L1是否声明RLS | 1. L1不声明RLS，强制当前AuthContext+对象权限+tenant FK+非特权角色完整隔离测试（建议，沿用可选RLS）；2. L1启用RLS并纳入真实角色/读写/RETURNING/池复用全分支；3. 其他（请说明） | G04档案及PG-G08/183实施判定 |
-| Q3 Gin部署探测契约 | 1. 采用第4.3节仅管理入口GET /healthz和/readyz固定JSON合同（建议）；2. L1暂不新增路由，仅生命周期/启动失败与Harness（TestCoreHealth改验进程健康条件，不能空跑）；3. 其他（请说明） | Gin入口与测试合同；不涉及前端/L2产品API |
+| Q2 RLS | 已确认：L1不启用或声明RLS | AuthContext、当前对象权限、tenant复合外键、非特权角色隔离仍强制；PG-G08不可整体跳过 |
+| Q3 Gin探测 | 已确认：仅管理入口GET /healthz和/readyz，采用第4.3节固定JSON合同 | 可据此安排后续实现与测试；不扩展L2产品API |
+| Q1 资源入口 | 尚未明确；本轮先澄清资料种类与取得方式 | 缺口对应第2节G01～G04；不能宣称已有环境/签署 |
+| 队长职责 | 队长在评论01a0a879-e5fd-7775-9012-e0bc7c6dff8e已承接证据协调及后端/DevOps/测试编排 | 不再要求用户另找工程协调人；实际环境管理员、签署人与阈值批准人仍需具名 |
 
-Q1取得事实来源后由执行者采集、核对并补齐准确值，不能让协调人替所有角色自动签署；环境平台、容量值、真实IdP映射若产生新取舍，再按依赖顺序确认。L0资料不齐不会抹去已有设计成果，但必须保持门禁blocked。
+### 10.1 Q1具体指什么
 
-最终交接给队长：本稿+CONTEXT术语+基线hash；Q1～Q3结论；G01～G04缺口责任归属；六类风险和PG矩阵；NOW-01→06文件责任划分。收到回答后按需更新同一文档至冻结版，设计必需决策关闭才可把VTR-6设done。即使设计done，仍不代表L0/L1实现完成；真实L0退出审查必须先于任何L1产品开发。
+上一轮把“环境资料、使用许可、实测结果、范围签署”合称为批准证据，表述过宽。现在首先需要知道哪些测试资源已经可用、谁能提供接入资料；不要求用户预先提交尚未执行的探针报告，也不要求另办一张审批单。
+
+| 类别 | 用户/资源负责人首先提供 | 执行阶段采集并核验 |
+|---|---|---|
+| OCR（G01） | 允许用于测试的样本仓库、模型服务/配置入口、使用范围或预算负责人 | 本机版本/hash已查；项目选定发行物、完整commit、Runner digest、样本base/head、固定配置及成功/失败真实报告由执行人固定/产生 |
+| 企业OIDC（G03） | 实际系统名称、测试客户端/环境入口、应用访问域名或回调配置的管理员 | issuer/Discovery、精确回调、权限/准入与停用语义及真实兼容性记录；不自选Keycloak或填示例 |
+| 飞书（G03） | 可用于测试的群/机器人目标及管理员 | 获准目标上的发送/响应语义、安全设置、查证能力和Secret角色；无查证能力如实记录，不伪造只读凭据 |
+| PostgreSQL（G04） | 有无可用测试实例及环境负责人；没有则说明需准备 | 版本/角色/正式迁移/双连接、阈值批准与PG报告；不能根据本机有docker推断PG已就绪 |
+| 范围签署（G02/G04） | 谁负责产品、技术和阈值批准 | 具体release-scope整理后，绑定其revision/hash确认Scan延期原因、排除项、复评条件和退出标准；指定具名责任人的明确issue回复可作为记录，不要求单独盖章文件 |
+
+已有配置文档、工单或管理员可提供入口即可，由执行者提取非秘密事实。没有资料时明确“尚未准备”，由队长列最小准备项再逐项确认。仅提供管理员姓名不等于已准予使用其环境；使用范围/预算应由有权者明确，不能扩大到生产。密钥不贴issue，只提供受控引用或交给相应执行环境。
+
+### 10.2 当前唯一待答问题
+
+Q1资源目前是什么状态？请选择：1. 已有测试资源，提供现有资料入口或各环境对接人（有资源时建议此项）；2. 尚未准备，由队长整理最小资源准备清单，再逐项确认；3. 其他（请说明）。
+
+两种路径均由团队完成探针和报告，不让用户手工计算hash或证明测试成功。资源平台、实际IdP映射、容量/阈值如产生新的取舍，再针对具体项确认，不重复询问已关闭的RLS、探测合同或产品范围。
+
+最终交接保持：同一方案、CONTEXT术语与基线hash；已确认的Q2/Q3；G01～G04缺口责任归属；六类风险及PG矩阵；NOW-01→06文件责任划分。Q1尚未明确，VTR-6保持blocked；取得资源准备路径并关闭设计阶段必需决策后再评估done。设计完成不等于L0完成，真实L0退出审查必须先于L1产品开发。
