@@ -173,32 +173,33 @@ responsibilities:
     status: coordinator
   ocr_probe_executor:
     role: OCR 探针执行人
-    agent_id: null
-    status: missing
+    agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+    resource_authorizer_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: assigned_engineering_executor_user_authorized
   oidc_environment_admin:
     role: OIDC 测试环境管理员
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: assigned_user_declared
   feishu_admin:
     role: 飞书测试群/机器人管理员
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: assigned_user_declared
   pg_environment_owner:
     role: PostgreSQL 环境负责人
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: assigned_user_declared
   threshold_approver:
     role: PG 阈值批准人
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: assigned_user_declared
   product_approver:
     role: 产品签署人
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: designated_pending_explicit_scope_signoff
   technical_approver:
     role: 技术签署人
-    principal_ref: null
-    status: missing
+    principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    status: designated_pending_explicit_scope_signoff
 
 file_owners:
   - path: release-scope.yaml
@@ -248,7 +249,9 @@ version_selection:
 
 approvals:
   scope_binding:
-    status: blocked
+    status: blocked_pending_explicit_signoff
+    designated_product_approver_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    designated_technical_approver_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     product_approval_ref: null
     technical_approval_ref: null
     approved_scope_revision: null
@@ -256,8 +259,8 @@ approvals:
   g02_scan_deferred:
     requested: true
     effective: false
-    decision_owner: null
-    technical_owner: null
+    decision_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+    technical_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     signed_at: null
     scope_manifest_revision: L1-core-now01-r1
     excluded_capabilities:
@@ -270,8 +273,8 @@ approvals:
     approval_ref: null
 
 status_reasons:
-  - 缺少产品/技术签署人及与本 scope revision/hash 的批准引用
-  - 缺少 OCR 探针执行人、批准发行物、样本和 Runner 证据
-  - 缺少实际 OIDC/飞书测试入口、管理员及受控 Secret 引用
-  - 缺少 PostgreSQL 环境负责人、角色、版本和阈值批准人
+  - 已指定同一 Multica 成员承担产品/技术批准及环境职责，但尚未提交绑定 scope revision/hash 的明确批准
+  - 已指定 OCR 工程执行 agent 和资源授权人；批准发行物、样本和 Runner 证据仍缺失
+  - 已指定 OIDC/飞书环境责任人；实际 OIDC 入口、Secret 引用、发送授权和查证能力仍未核验
+  - 已指定 PostgreSQL 环境与阈值责任人；版本、非特权角色和阈值批准引用仍缺失
   - 以上缺口未补齐前，不得启动 L1 产品实现或外部副作用

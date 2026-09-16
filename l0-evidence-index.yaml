@@ -4,9 +4,9 @@ status: blocked_pending_approval
 scope:
   revision: L1-core-now01-r1
   file: release-scope.yaml
-  sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
+  sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
   approval_ref: null
-  approval_status: missing_named_product_and_technical_approvers
+  approval_status: designated_pending_explicit_signoff
 registered_at_utc: 2026-09-16T07:59:36Z
 source_refs:
   design_file: ai-devops-platform-design-v1.7.md
@@ -31,13 +31,14 @@ entries:
   - gate_id: G01
     name: review_probe
     scope_revision: L1-core-now01-r1
-    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
+    scope_sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
     executor:
       role: OCR 探针执行人
-      agent_id: null
+      agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+      resource_authorizer_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     reviewer:
       role: 产品/技术签署人
-      principal_ref: null
+      principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     recorded_at_utc: 2026-09-16T07:59:36Z
     inputs:
       source_commit: null
@@ -67,12 +68,12 @@ entries:
       exit_code: null
       parsed_schema_version: null
     result: blocked
-    reason: OCR model/provider 已配置且 `ocr llm test` 由用户报告通过；仍缺批准发行物、固定样本、Runner digest、负责人及真实 review 成功/失败原件
+    reason: OCR model/provider 已配置且 `ocr llm test` 由用户报告通过；已登记工程执行 agent 与资源授权人，仍缺批准发行物、固定样本、Runner digest 及真实 review 成功/失败原件
 
   - gate_id: G02
     name: scan_scope_decision
     scope_revision: L1-core-now01-r1
-    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
+    scope_sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
     executor:
       role: 队长协调
       agent_id: 863e742b-5046-4cbb-8026-d4d9b3def516
@@ -80,8 +81,8 @@ entries:
     decision:
       requested_status: DEFERRED
       effective_status: pending_named_signoff
-      decision_owner: null
-      technical_owner: null
+      decision_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+      technical_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       signed_at_utc: null
       excluded_capabilities:
       - scan.schedule
@@ -97,15 +98,15 @@ entries:
       argv: null
     output_hashes: []
     result: blocked
-    reason: 用户已选择现有资源及延期方向，但尚无绑定本 scope revision 的具名产品/技术签署
+    reason: 已指定用户为 G02 产品/技术决策人，但尚未提交绑定本 scope revision/hash 的明确签署
 
   - gate_id: G03
     name: external_scope
     scope_revision: L1-core-now01-r1
-    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
+    scope_sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
     executor:
       role: OIDC/飞书环境负责人
-      principal_ref: null
+      principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     reviewer:
       role: 测试负责人
       agent_id: 09c61ea1-d9b3-435a-9bf9-5ca318f1bcfd
@@ -119,7 +120,7 @@ entries:
       oidc_test_environment: null
       feishu_mode: custom_webhook_bot
       feishu_destination_ref: null
-      feishu_admin: null
+      feishu_admin: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       feishu_credential_ref: null
       feishu_lookup_or_receipt_capability: null
       send_authorization_scope: null
@@ -131,13 +132,13 @@ entries:
       version: registration_only
       argv: null
     result: blocked
-    reason: 已收到飞书测试目标标识；管理员、Secret 引用、发送授权和查证能力仍未确认，不执行发送或 IdP 修改
+    reason: 已收到飞书测试目标并指定用户责任人；Secret 引用、发送授权、查证能力和实际 OIDC 入口仍未核验，不执行发送或 IdP 修改
     evidence_ref: issue://VTR-7/G03-inputs-required
 
   - gate_id: G04
     name: implementation_discipline
     scope_revision: L1-core-now01-r1
-    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
+    scope_sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
     executor:
       role: DevOps
       agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
@@ -152,10 +153,10 @@ entries:
       pg_test_plan: implementation_plan_section_8
       endpoint_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
       endpoint_storage: controlled_reference_only
-      postgres_instance: null
+      postgres_instance: supplied_private_endpoint_controlled_ref
       postgres_version: null
       non_privileged_role: null
-      threshold_owner: null
+      threshold_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       threshold_approval_ref: null
     input_hashes: []
     command:
@@ -163,7 +164,7 @@ entries:
       argv: null
     output_hashes: []
     result: blocked
-    reason: 已收到 PostgreSQL 私网端点；真实版本、非特权角色、阈值负责人及批准引用仍缺失
+    reason: 已收到 PostgreSQL 私网端点并指定用户责任人；真实版本、非特权角色和阈值批准引用仍缺失
     evidence_ref: issue://VTR-7/G04-inputs-required
 
 acceptance:
