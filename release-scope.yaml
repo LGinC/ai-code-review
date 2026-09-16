@@ -1,0 +1,260 @@
+schema_version: release-scope.v1
+purpose: NOW-01 唯一发布范围与职责登记；不是运行时配置
+release_profile: postgres-core
+milestone: L1
+scope_revision: L1-core-now01-r1
+status: blocked_pending_approval
+production_integration_allowed: false
+execution_registration_allowed: false
+
+baselines:
+  design:
+    file: ai-devops-platform-design-v1.7.md
+    commit: f5a815bf08d356a6b64bdf2a2fbe0161d28dda2e
+    sha256: f7b8225ad26a5d390b06380fd627e3b292fd609e3c25539b5b62ba75628cbb85
+  implementation_plan:
+    file: ai-devops-L0-L1-implementation-plan-v0.1.md
+    source_commit: 94473479c71964df26730bedab3e18da6174c3ca
+    approved_attachment: vtr-6-plan-v1.0-9447347.md
+    attachment_id: 01a0a903-ca64-7630-bce6-ff1b1c6e0ff9
+  decisions:
+    q1_resource_path: existing_resources
+    q2_rls: not_enabled_or_not_claimed
+    q3_http: healthz_and_readyz_only
+
+scope:
+  install: core_only
+  runtime_shape: single_api_single_worker
+  persistence: postgres
+  http:
+    framework: gin
+    routes:
+    - GET /healthz
+    - GET /readyz
+  queue: postgres
+  workflow_driver: compiled_go_pipeline
+  external_operation_registry: compiled_release_registry
+  schema_registry: embedded_static
+  enabled_capabilities:
+  - core.identity_context
+  - core.tenant_object_authorization
+  - core.workflow_state
+  - core.external_operation_ledger
+  - core.attempt_and_observation_facts
+  - core.postgres_queue_and_outbox
+  - core.schema_validation
+  - core.audit_and_artifact_references
+  - core.health_probes
+  required_gates:
+  - G01
+  - G02
+  - G03
+  - G04
+  exit_conditions:
+  - one approved scope revision and sha256 are signed by named product and technical approvers
+  - G01 has approved OCR release, fixed sample base/head, runner digest, and success/failure evidence
+  - G02 has a named DEFERRED decision bound to this scope revision, four excluded scan capabilities, reason, and revisit trigger
+  - G03 has actual OIDC and Feishu test targets, administrators, credential references, and permission evidence
+  - G04 has named file/table owners, dependency registry, PG test inputs, threshold owner, and approval reference
+  - no unverified candidate is present in the runtime registry
+
+modules:
+  identity: {installed: true, enabled: true}
+  workflow: {installed: true, enabled: true}
+  external_operations: {installed: true, enabled: true}
+  queue_outbox: {installed: true, enabled: true}
+  schema: {installed: true, enabled: true}
+  audit_artifacts: {installed: true, enabled: true}
+  review: {installed: false, enabled: false, candidate_only: true}
+  notification: {installed: false, enabled: false, candidate_only: true}
+  oidc_product_flow: {installed: false, enabled: false, candidate_only: true}
+  scan: {installed: false, enabled: false}
+  repair: {installed: false, enabled: false}
+  intake: {installed: false, enabled: false}
+  incident: {installed: false, enabled: false}
+  feed: {installed: false, enabled: false}
+  agents: {installed: false, enabled: false}
+
+excluded_capabilities:
+  items:
+  - scan.schedule
+  - scan.run
+  - scan.report
+  - scan.auto_issues
+  - l2.real_oidc_integration
+  - l2.github_review_integration
+  - l2.feishu_delivery_integration
+  - l2.product_web_routes
+  - repair.agent_execution
+  - intake.observation_capture
+  - incident.postmortem
+  - high_availability_feed
+  reason: 仅冻结 L1 core；L2 候选与后续能力不得因文档示例进入运行目录
+  revisit: L2 scope 冻结前逐项取得实际资源、契约和签署
+
+future_candidates:
+  l2:
+    profile: postgres-minimal
+    milestone: L2
+    source_registry: frontend-build-L2-registry.yaml
+    status: candidate_not_approved
+    candidates:
+      scm: github
+      identity: corporate_oidc
+      notification: feishu_custom_webhook_bot
+    responsibility: 由后续 L2 scope owner 选择实际版本、配置入口和验证负责人
+  l3_scan:
+    profile: postgres-scan-repair
+    milestone: L3
+    status: excluded_pending_review
+    gate: G02
+    no_runtime_registration: true
+
+resource_facts:
+  project_resources_file: .multica/project/resources.json
+  github_repository:
+    url: https://github.com/LGinC/ai-code-review
+    resource_id: 9c31b5b9-1787-4a7a-9207-3f933dd7b622
+    use_authorized: not_confirmed_for_external_write
+  local_directory:
+    label: ai-code-review
+    resource_id: d0c9c93e-f441-421f-befa-aef5f6a1a1e3
+    path: D:\others\github\ai-code-review
+    use_authorized: local_checkout_only
+  secret_references:
+    discovered: none
+    design_examples_only:
+    - secret://tenant/sso/client-secret
+    - secret://tenant/notify/feishu-webhook-and-secret
+    rule: 示例引用不代表真实 Secret；不提交或记录 Secret 值
+  environment_evidence_location: null
+
+responsibilities:
+  scope_file:
+    role: DevOps
+    agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
+    status: assigned
+  evidence_index:
+    role: DevOps
+    agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
+    status: assigned
+  backend_and_database:
+    role: 后端/数据库实施
+    agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+    status: assigned_for_following_stage
+  test_harness:
+    role: 测试
+    agent_id: 09c61ea1-d9b3-435a-9bf9-5ca318f1bcfd
+    status: assigned_for_following_stage
+  architecture_review:
+    role: 架构复核
+    agent_id: 168bc97d-a80d-40ff-a4dc-1820574daf72
+    status: assigned_for_review
+  orchestration:
+    role: 队长
+    agent_id: 863e742b-5046-4cbb-8026-d4d9b3def516
+    status: coordinator
+  ocr_probe_executor:
+    role: OCR 探针执行人
+    agent_id: null
+    status: missing
+  oidc_environment_admin:
+    role: OIDC 测试环境管理员
+    principal_ref: null
+    status: missing
+  feishu_admin:
+    role: 飞书测试群/机器人管理员
+    principal_ref: null
+    status: missing
+  pg_environment_owner:
+    role: PostgreSQL 环境负责人
+    principal_ref: null
+    status: missing
+  threshold_approver:
+    role: PG 阈值批准人
+    principal_ref: null
+    status: missing
+  product_approver:
+    role: 产品签署人
+    principal_ref: null
+    status: missing
+  technical_approver:
+    role: 技术签署人
+    principal_ref: null
+    status: missing
+
+file_owners:
+  - path: release-scope.yaml
+    owner_role: DevOps
+    owner_agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
+  - path: l0-evidence-index.yaml
+    owner_role: DevOps
+    owner_agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
+  - path: cmd/api-server/main.go
+    owner_role: backend
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - path: cmd/worker/main.go
+    owner_role: backend
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - path: internal/domain,internal/application,internal/ports
+    owner_role: backend
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - path: internal/adapters/storage/gormpostgres,db/migrations/core
+    owner_role: backend_database
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - path: tests
+    owner_role: test
+    owner_agent_id: 09c61ea1-d9b3-435a-9bf9-5ca318f1bcfd
+
+table_owners:
+  - tables: tenants,users,memberships,integrations,policy_versions
+    owner_role: identity
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - tables: workflow_runs,step_runs
+    owner_role: workflow
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - tables: external_operations,external_operation_attempts,external_watches,external_observations,resource_write_leases,operation_effect_links
+    owner_role: external_operations
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - tables: outbox_events,outbox_deliveries,consumer_receipts
+    owner_role: queue_outbox
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  - tables: artifacts,audit_events,api_idempotency_records
+    owner_role: audit_artifacts
+    owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+
+version_selection:
+  owner_role: 后端/数据库实施 + DevOps 环境登记
+  owner_agent_id: a68a08a3-93c8-4205-b17d-c553e2da004b
+  status: pending_real_environment
+  rule: 依赖版本、PG 版本、Runner 镜像 digest 和 Secret 实现只从批准环境登记，不以本机工具发现替代
+
+approvals:
+  scope_binding:
+    status: blocked
+    product_approval_ref: null
+    technical_approval_ref: null
+    approved_scope_revision: null
+    approved_scope_sha256: null
+  g02_scan_deferred:
+    requested: true
+    effective: false
+    decision_owner: null
+    technical_owner: null
+    signed_at: null
+    scope_manifest_revision: L1-core-now01-r1
+    excluded_capabilities:
+    - scan.schedule
+    - scan.run
+    - scan.report
+    - scan.auto_issues
+    reason: 本阶段仅 L0/L1；扫描不在交付范围，候选尚未完成扫描实验
+    revisit_trigger: 进入 L3 scope 冻结时复评；若选择自动扫描，先执行 SCAN-P01～06
+    approval_ref: null
+
+status_reasons:
+  - 缺少产品/技术签署人及与本 scope revision/hash 的批准引用
+  - 缺少 OCR 探针执行人、批准发行物、样本和 Runner 证据
+  - 缺少实际 OIDC/飞书测试入口、管理员及受控 Secret 引用
+  - 缺少 PostgreSQL 环境负责人、角色、版本和阈值批准人
+  - 以上缺口未补齐前，不得启动 L1 产品实现或外部副作用

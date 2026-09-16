@@ -1,0 +1,169 @@
+schema_version: l0-evidence-index.v1
+purpose: NOW-01～04 受控证据索引；原始证据不存入仓库
+status: blocked_pending_approval
+scope:
+  revision: L1-core-now01-r1
+  file: release-scope.yaml
+  sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+  approval_ref: null
+  approval_status: missing_named_product_and_technical_approvers
+registered_at_utc: 2026-09-16T07:59:36Z
+source_refs:
+  design_file: ai-devops-platform-design-v1.7.md
+  design_commit: f5a815bf08d356a6b64bdf2a2fbe0161d28dda2e
+  design_sha256: f7b8225ad26a5d390b06380fd627e3b292fd609e3c25539b5b62ba75628cbb85
+  implementation_plan_file: ai-devops-L0-L1-implementation-plan-v0.1.md
+  implementation_plan_commit: 94473479c71964df26730bedab3e18da6174c3ca
+  approved_plan_attachment: vtr-6-plan-v1.0-9447347.md
+  approved_plan_attachment_id: 01a0a903-ca64-7630-bce6-ff1b1c6e0ff9
+  project_resources_file: .multica/project/resources.json
+  source_issue: VTR-7
+
+recording_policy:
+  timezone: UTC
+  result_enum: [pass, fail, not_run, blocked]
+  raw_evidence: controlled_attachment_or_artifact_only
+  sensitive_stdout: restricted_and_not_committed
+  missing_evidence: never_mark_pass
+  candidate_registration: prohibited_until_verified
+
+entries:
+  - gate_id: G01
+    name: review_probe
+    scope_revision: L1-core-now01-r1
+    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    executor:
+      role: OCR 探针执行人
+      agent_id: null
+    reviewer:
+      role: 产品/技术签署人
+      principal_ref: null
+    recorded_at_utc: 2026-09-16T07:59:36Z
+    inputs:
+      source_commit: null
+      sample_repository: null
+      sample_base_sha: null
+      sample_head_sha: null
+      approved_ocr_release: null
+      runner_image_digest: null
+      rules_hash: null
+      model_config_hash: null
+      execution_identity: null
+      outbound_scope: null
+    input_hashes: []
+    command:
+      version: null
+      argv: null
+    outputs:
+      success_evidence_ref: null
+      failure_evidence_ref: null
+      stdout_sha256: null
+      stderr_sha256: null
+      exit_code: null
+      parsed_schema_version: null
+    result: blocked
+    reason: 仅发现本机候选工具事实；批准发行物、固定样本、Runner digest、负责人及真实成功/失败结果均缺失
+    evidence_ref: issue://VTR-7/G01-inputs-required
+
+  - gate_id: G02
+    name: scan_scope_decision
+    scope_revision: L1-core-now01-r1
+    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    executor:
+      role: 队长协调
+      agent_id: 863e742b-5046-4cbb-8026-d4d9b3def516
+    recorded_at_utc: 2026-09-16T07:59:36Z
+    decision:
+      requested_status: DEFERRED
+      effective_status: pending_named_signoff
+      decision_owner: null
+      technical_owner: null
+      signed_at_utc: null
+      excluded_capabilities:
+      - scan.schedule
+      - scan.run
+      - scan.report
+      - scan.auto_issues
+      reason: 本阶段仅 L0/L1；扫描不在交付范围，候选尚未完成扫描实验
+      revisit_trigger: 进入 L3 scope 冻结时复评；若选择自动扫描，先执行 SCAN-P01～06
+      approval_ref: null
+    input_hashes: []
+    command:
+      version: registration_only
+      argv: null
+    output_hashes: []
+    result: blocked
+    reason: 用户已选择现有资源及延期方向，但尚无绑定本 scope revision 的具名产品/技术签署
+    evidence_ref: issue://VTR-7/G02-signoff-required
+
+  - gate_id: G03
+    name: external_scope
+    scope_revision: L1-core-now01-r1
+    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    executor:
+      role: OIDC/飞书环境负责人
+      principal_ref: null
+    reviewer:
+      role: 测试负责人
+      agent_id: 09c61ea1-d9b3-435a-9bf9-5ca318f1bcfd
+    recorded_at_utc: 2026-09-16T07:59:36Z
+    inputs:
+      oidc_provider: corporate_oidc_selected_but_instance_unknown
+      oidc_issuer_or_discovery: null
+      oidc_callback: null
+      oidc_client_type: null
+      oidc_claims_and_admission: null
+      oidc_test_environment: null
+      feishu_mode: custom_webhook_bot
+      feishu_destination_ref: null
+      feishu_admin: null
+      feishu_credential_ref: null
+      feishu_lookup_or_receipt_capability: null
+      send_authorization_scope: null
+    input_hashes: []
+    command:
+      version: registration_only
+      argv: null
+    output_hashes: []
+    result: blocked
+    reason: 只有企业 OIDC 与飞书自定义机器人类型选择；实际入口、管理员、目标、Secret 引用和权限证据未提供，不执行发送或 IdP 修改
+    evidence_ref: issue://VTR-7/G03-inputs-required
+
+  - gate_id: G04
+    name: implementation_discipline
+    scope_revision: L1-core-now01-r1
+    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    executor:
+      role: DevOps
+      agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
+    reviewer:
+      role: 架构复核
+      agent_id: 168bc97d-a80d-40ff-a4dc-1820574daf72
+    recorded_at_utc: 2026-09-16T07:59:36Z
+    inputs:
+      file_owner_registry: release-scope.yaml
+      table_owner_registry: release-scope.yaml
+      handler_review_template: implementation_plan_section_5_3
+      pg_test_plan: implementation_plan_section_8
+      postgres_instance: null
+      postgres_version: null
+      non_privileged_role: null
+      threshold_owner: null
+      threshold_approval_ref: null
+    input_hashes: []
+    command:
+      version: registration_only
+      argv: null
+    output_hashes: []
+    result: blocked
+    reason: 已登记文件/表归属和 PG-G01～12 计划；真实 PG、非特权角色、版本、阈值负责人及批准引用缺失
+    evidence_ref: issue://VTR-7/G04-inputs-required
+
+acceptance:
+  required_before_unblock:
+  - all entries have named executor and reviewer where required
+  - scope revision and release-scope sha256 are approved by named product and technical principals
+  - G02 DEFERRED is effective only after signed binding to this scope revision
+  - G01/G03/G04 inputs are supplied through controlled non-secret references
+  - no product code, external send, IdP mutation, database creation, or production operation is performed by NOW-01
+  current_exit: blocked
