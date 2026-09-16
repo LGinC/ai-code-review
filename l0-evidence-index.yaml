@@ -1,12 +1,14 @@
 schema_version: l0-evidence-index.v1
 purpose: NOW-01～04 受控证据索引；原始证据不存入仓库
-status: blocked_pending_approval
+status: blocked_pending_downstream_gates
 scope:
   revision: L1-core-now01-r1
   file: release-scope.yaml
   sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
-  approval_ref: null
-  approval_status: designated_pending_explicit_signoff
+  approval_ref: issue://VTR-7/comment/01a0a98a-8f89-79da-84b5-267faae892ac
+  approval_status: approved
+approved_by: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+approved_at_utc: 2026-09-16T09:27:05Z
 registered_at_utc: 2026-09-16T07:59:36Z
 source_refs:
   design_file: ai-devops-platform-design-v1.7.md
@@ -80,10 +82,10 @@ entries:
     recorded_at_utc: 2026-09-16T07:59:36Z
     decision:
       requested_status: DEFERRED
-      effective_status: pending_named_signoff
+      effective_status: DEFERRED
       decision_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       technical_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
-      signed_at_utc: null
+      signed_at_utc: 2026-09-16T09:27:05Z
       excluded_capabilities:
       - scan.schedule
       - scan.run
@@ -91,14 +93,14 @@ entries:
       - scan.auto_issues
       reason: 本阶段仅 L0/L1；扫描不在交付范围，候选尚未完成扫描实验
       revisit_trigger: 进入 L3 scope 冻结时复评；若选择自动扫描，先执行 SCAN-P01～06
-      approval_ref: null
+      approval_ref: issue://VTR-7/comment/01a0a98a-8f89-79da-84b5-267faae892ac
     input_hashes: []
     command:
       version: registration_only
       argv: null
     output_hashes: []
-    result: blocked
-    reason: 已指定用户为 G02 产品/技术决策人，但尚未提交绑定本 scope revision/hash 的明确签署
+    result: pass
+    reason: 用户已明确批准本 scope 的 G02 DEFERRED 决策；四项 scan 能力排除、原因及 L3 复评触发条件已绑定本 scope revision/hash
 
   - gate_id: G03
     name: external_scope
