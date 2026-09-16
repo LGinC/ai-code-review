@@ -1,25 +1,29 @@
-# AI DevOps 平台前端详细设计（匹配主方案 v1.6）
+# AI DevOps 平台前端详细设计（匹配主方案 v1.7）
 
 > 企业 Web 控制台与浏览器扩展的完整设计；首发严格限定 L2，后续能力按主方案单一路线装配。
 
 | 文档属性 | 内容 |
 | --- | --- |
-| 前端设计版本 | **FE-1.2**，匹配主方案 **v1.6**；L2 施工与联调门禁修订 |
+| 前端设计版本 | **FE-1.3**，匹配主方案 **v1.7**；事故复盘与防复发知识整合 |
 | 状态 | 详细设计与待冻结合同；不是已实现或已联调的系统 |
-| 修订日期 | 2026-09-15 |
-| 范围权威 | 主v1.6第3、19.8、31章；L0～L7与NOW-01～08保持唯一 |
+| 修订日期 | 2026-09-16 |
+| 范围权威 | 主 v1.7 第 3、19.8/19.9、31 章；L0～L7 与 NOW-01～08 保持唯一 |
 | L2浏览器合同 | FE-L2-0.1 / web-l2-v1 / snapshot-sse-v1，原文件不改 |
 | 技术基线 | React、TypeScript、Vite、React Router Data Mode、Ant Design、TanStack Query；同源Gin BFF |
 | 默认运行档案 | 单API、PostgreSQL、db_snapshot，SSE可关闭并回退有界REST读取 |
 | 当前交付边界 | L2仅SSO、GitHub单条Review摘要、一个企业通知、外部操作和最小Web |
-| 后续产品边界 | L3 repair与scan分开；L4告警；L5标准导入；L6扩展；L7逐项Provider/HA等 |
+| 后续产品边界 | L3 repair/scan 独立；L4 告警；L5 导入；L6 扩展；L7 选定复盘知识增量或其他单项 |
 | 本次施工入口 | NOW-01 的 §3.2 build 注册表；NOW-08 先完成 §28.7 的同一 OpenAPI commit + 生成 client |
 
-本版直接修订 FE-1.1，不覆盖旧前端文件、主方案 v1.6 或 FE-L2-0.1。**可进入本 build 的页面以第 3.2 节为准；能否接线联调以第 28.7 节的合同门禁为准。** 36 章是规格库，不是一个“全部完成”任务。后续扫描、审批、Agent、观测与多通道章节只在其主方案切片被选择时使用。
+本版直接修订 FE-1.2，将已并入主 v1.7 的事故复盘、文档发布和知识使用交互整合到既有页面、共享组件、合同与验收中。**不是再附一份独立 PM 产品说明**；历史 PM-0.1 仅作来源，当前领域语义以 [主方案 v1.7](ai-devops-platform-design-v1.7.md) 为准。原主 v1.6、FE-1.2、FE-L2-0.1、L2 注册表和模板文件均不改写。
 
-**L2 默认不新增业务动作：** 仅重新审查、重试已有回写、只读查证、申请安全重试、取消流程和退出。仓库/通知/身份设置只读；无 `review.create`、测试评论、测试通知或配置写入入口。登录协议的必要 start/callback 属于认证流程，不借此扩大业务动作集合。
+**首发仍是原 L2 子集：** 五项对象动作（rerun、retry-publication、reconcile、retry-request、cancel）及退出；组织入口绑定单租户；无 `X-Tenant-ID` 必做改造，无创建 Review/测试评论/配置写入、复盘菜单或知识检索。§3.2 L2 build 表与 §28.7 NOW-08 门禁保持原样，不因本文件新增章节而增加施工范围。
 
-**L2 会话默认绑定组织入口的单一租户；不要求 `X-Tenant-ID` 或同源多租户切换。** D02 的字段细化、D03 动作与其他 D 子集先写入同一受审 OpenAPI；未冻结/未实现不得创建假 Descriptor 或展示业务按钮。B02 的 capabilities 样例及三种 SSE event 保持原样；需要改变 B02 时须升级 `web-l2-v1` 所标识的浏览器合同版本并由前后端签署，本次不代签、不创建 FE-L2-0.2。
+**复盘只在 L7 选定增量启用：** 既有 PG11 Incident 增加复盘 Tab，PG13 增加文档发布 Kind，PG14/PG15 展示实际知识使用清单，PG17 复用外部效果。不新增一级知识门户或 PG 编号；各子区域须进入该 build 的显式注册清单，并先完成 D17 与实际使用的原 D 子集的同一 OpenAPI/client/后端实装门禁。没有合同/实现就不显示动作，不用假 Descriptor。
+
+**B02 不变：** `web-l2-v1`、`snapshot-sse-v1` 的三种 event、capabilities 样例、六项动作与会话模型不被悄悄扩展。D17 是后续独立 Schema 子合同；若改变 B02 既有语义，必须按原规则升版并双方签署。没有新 FE-L2-0.2、L8、NOW-09 或平行路线。
+
+文档继续保留 36 个主章节、31 个 PG 身份；原 D01～16 和 FE-AC-001～160 保留，新增 **D17、FE-AC-161～180**。第 19.7～19.14、21.7、28.8 是新增复盘交互主入口；其余章节同步规定状态、构建、安全、证据与验收边界。
 
 ## 目录
 
@@ -41,7 +45,7 @@
 16. [\[L5\] 观测问题导入与一键任务](#fe16)
 17. [\[L6\] 浏览器扩展详细设计](#fe17)
 18. [\[L5\] 人工报告与来源映射](#fe18)
-19. [\[L4\] Incident、诊断与证据](#fe19)
+19. [\[L4；复盘 L7\] Incident、诊断、证据与复盘](#fe19)
 20. [\[L2 有界报告；完整阅读器 L3+\] 证据阅读器与代码差异](#fe20)
 21. [\[L3 repair\] 统一审批与授权变化](#fe21)
 22. [\[L3 单 CLI；其他 L7\] Agent 目录与运行详情](#fe22)
@@ -65,21 +69,21 @@
 <a id="fe01"></a>
 ## 1. 文档基线、首发范围与约束
 
-### 1.1 四份输入与本文权威边界
+### 1.1 来源与权威边界
 
-本文 **FE-1.2** 匹配主方案 **v1.6**，直接修订 FE-1.1 的施工/合同边界并保留完整页面蓝图。无需同时阅读旧前端文件；主方案、FE-L2-0.1、FE-1.0 与 FE-1.1 均是只读来源，文件摘要见第 36 章。当前可施工子集由 §3.2 注册表及 §28.7 联调门禁明确给出。
+本文 FE-1.3 的业务基线是主 v1.7，视觉/工程与既有验收来源是 FE-1.2；PM-0.1 的功能已在主文档正式设计化，本文件不再允许从独立 PM 补充中另选一套 owner、发布 API 或路线。来源摘要见第 36 章。
 
 | 标记 | 权威与用途 | 冲突处理 |
 | --- | --- | --- |
-| B01 | 主方案 v1.6；业务状态、安全、迁移/安装边界、L0–L7 和 NOW-01～08 | 范围看主文档 §3/§31，等待机制看 §19.8，不由前端扩张 |
-| B02 | FE-L2-0.1；主 v1.6 明确保留的 `web-l2-v1` 最小浏览器合同 | 本文完整纳入其导航、capabilities 和 snapshot-sse-v1，不改变三种 SSE 事件名称 |
-| B03 | FE-1.0 历史蓝图 | 只作可追踪的来源，不再作为当前导航、默认 Feed 或前端实施顺序 |
-| B04 | FE-1.1，本次直接修订输入 | 保留 PG/D/FE-AC 身份；不继承其待冻结租户头、默认配置写入或历史测试通过声明 |
-| F | 本文前端决定：布局、组件、交互、工程约束 | 不修改后端状态机，不下发权限 |
-| D01–D16 | 延续原编号的待冻结 API/DTO 补充 | 按切片分别冻结；有路径不等于有完整 DTO，有示例不等于实现 |
-| T | 待实施验证的目标 | 测试报告必须区分 passed / failed / not_run / not_applicable |
+| B01 | 主 v1.7：范围、领域事实、复盘 §18.8～18.19、API §24.8、唯一 L0～L7 | 前端不能批准根因、改资格或产生私有对账 |
+| B02 | FE-L2-0.1：原 web-l2-v1、三种 snapshot SSE 和 L2 最小范围 | 本文样例与字段不改；待签 D 子集不得冒充原合同 |
+| B03 | FE-1.0：历史 PG/D/FE-AC 身份来源 | 不使用其全量首发/默认 durable Feed 路线 |
+| B04 | FE-1.2：本次直接前端修订输入 | L2 注册与动作不扩大；原 160 条验收逐字保留 |
+| B05 | PM-0.1：已整合到主设计的功能来源 | 不再是平行的当前 API、状态或排期权威 |
+| B06 | postmortem-template.md：待填模板 | draft/not_admitted，不是实际事故或发布凭证 |
+| F / D / T | 本文设计、待冻结合同、待执行验收 | 区分设计与实装；不伪造合同签署、后端能力或测试通过 |
 
-**文档版本、发布切片、前端 build、HTTP `/v1`、`web-l2-v1`、`snapshot-sse-v1`、领域 Schema 和扩展版本分别管理。** FE 升级不将 ObservationReport 的历史 `schema_version=1.2` 或任何后端事件自动改号。B02 表头仍记其产生时的 v1.5；v1.6 §26.6 已确认继续复用。**D 子集不是 B02 的静默改版。** `/me`/资源 DTO 等 B02 尚未定义的内容可以作为独立 Schema 在同一 OpenAPI commit 中细化；必须做 B02 兼容性评审。若修改 B02 既有必填字段、事件名/语义、请求身份模型或其他协议承诺，须升级浏览器合同版本并由双方签署；不得把新的要求继续冒充 `web-l2-v1`。本文保留 B02 原示例，不宣布新协议已签署。
+文档版本、HTTP `/v1`、浏览器协议、各领域/扩展 Schema、知识文档版本与 release-scope 分别管理。B02 仍保留 v1.5 历史表头，主 v1.6 和 v1.7 均继续复用。D17 的新字段不能混入 B02 示例或变成 L2 必填；部署支持复盘不代表浏览器能默认处理未知 Kind。原 L2 注册表保留 v1.6/FE-1.2 来源摘要，属于同一历史草案；实际 NOW-01/NOW-08 采用新主基线时更新同一工程清单的来源与签署记录，不增加页面/动作、不创建第二张有效清单。
 
 ### 1.2 L2 首发与完整蓝图的区别
 
@@ -94,6 +98,7 @@
 | repair | 不装配 | L3 第一工作包：长等待、控制台同意、一个 CLI、fixture 修复；不依赖扫描，不新增任意手工任务产品 |
 | scan | 不装配；有权 scope 摘要可说明 DEFERRED | L3 第二工作包：REPORT_ONLY 仅报告；GO 才自动 Issue；不由 L3 字样自动开放 |
 | 告警/恢复 | 不装配 | L4 一个后端/告警，缺少部署证据时调查工作台；自动恢复计划 L7 |
+| 复盘/知识 | L2 不安装、不建 Tab、不调用接口 | L7 选定增量，PG11/13/14/15/17 的受控子区域；依赖 Incident/共享发布而非 HA |
 | Intake / 扩展 | 不注册路由、不预加载解析器、不探测源平台 | L5 URL/JSON 导入；L6 扩展渐进增强；无需一次具备五平台 DOM 捕获 |
 | 实时 | REST 权威快照 + 可选三种 SSE 提示，**不使用持久游标** | L7 HA 才使用 durable Feed，多副本准入不要求 NATS |
 | 管理配置 | 嵌入默认值及管理员已登记覆盖的**只读**来源/有效值；无保存/测试/轮换按钮 | 管理写入另经 D03/D09 与 scope；完整继承树/插件不进 L2 |
@@ -152,6 +157,9 @@
 | 自动告警 | Incident → 证据/版本/诊断 → 所选 Agent → 测试/PR → 独立恢复状态 |
 | 异常运维 | 业务页“结果未知” → 同一 ExternalOperation 详情 → 只读查证/有门禁的重试申请 → 权威回执 |
 | 权限或模块变化 | 页面正在操作 → 撤权/停用通知 → 冻结不再合法的动作 → 保留合法历史/安全取消 |
+| 事故复盘（L7） | 严重 episode → 固定事实/原因/效果 → 内容评审 → 脱敏文档批准 → PR/文件核验 → 后续任务知识清单/独立回归 |
+
+复盘作者、内容评审者、向仓库披露的批准人、SCM 合并者和后续知识使用者是资源关系，可以同人但须分别具备权限。获准使用 repository-safe 文档的人不必可读内部事故；前端只展示获准导出内容，不通过关联链接补取受限 Incident。
 
 ### 2.4 跨角色交接
 
@@ -246,6 +254,23 @@ D07 是所有当前业务页共用的 kernel 实时/有界轮询依赖，作为�
 所有资源 ID、Tab 和排序键来自静态 allowlist。source URL、SQL/日志、客户标识、Secret 和批准 challenge 不写 URL/标题/分析日志。L2 租户固定由组织入口与服务端会话绑定，不提供 Query/Header 切租户。未来多租户选择另行冻结 D02，也不能由选择值取得额外权限。未交付路由显示“本发行版不提供此功能”，不探测该模块 API；未授权对象统一不可访问，已知授权删除对象才可解释“已删除”。
 
 表单离开提示“继续编辑/放弃未提交输入”；已有写请求时明确“离开页面不取消服务端操作”。请求未确认不自动重试、换键或返回上一页即取消。重返页面只读安全回执/当前资源；缺正文不得假装能跨刷新重放原输入。
+
+### 3.5 L7 复盘子区域注册，不修改 L2 build 表
+
+下表是选定 `postmortem-knowledge` 增量时原 Page ID 的扩展位置，不是已签署的另一份 L2 registry。该增量开工时将选定行加入**同一工程 build 清单的对应发行 scope**；它不新增 PG32 或独立路线。当前 L2 文件原字节保持不变，以下所有子区域在 L2 均不装配。
+
+| 原 Page ID / 子区域 | 同一 build 的必要依赖 | 读取与动作合同 | L2 |
+| --- | --- | --- | --- |
+| PG11.postmortem | 已交付 Incident + postmortem.records + 明确读取权 | D17 内容/revision；编辑用 D03/D08 的已签子集 | 排除 |
+| PG11.postmortem.export | records+publishing、当前仓库受众权限 | D17 导出包/核验、D03 文档动作、D13 受控 Markdown | 排除 |
+| PG13.postmortem_publication | 既有 Approval 框架 + 发布 Kind 注册 + D17 实装 | D03/D17 的第三 Kind，不复用 task_start/patch 表单 | 排除 |
+| PG14/PG15.knowledge_use | 现有已交付任务/Agent + 本次知识能力 | D17 只读使用清单；无全库检索/重新执行按钮 | 排除 |
+| PG17.documentation | 共享操作页 + 本次操作类型白名单 | D03/D04 既有查证/重试；D17 只增加有权关联 | 不注册文档类型 |
+| PG18/PG25.postmortem_events | 已交付通道、本次安全模板/收件权限 | D10/D17 事件语义，不增加第二个消息通道 | 不注册复盘事件 |
+
+建议深链保留在既有 Incident 页面：`/incidents/:id?tab=postmortem&pm=:pmId&revision=:revision`，导出预览可再用白名单 export ID。以上 UI 子路由是 D17 待冻结值，不是已上线 API；正文、源 URL、客户标识和签署令牌不得进入 URL。无 Incident 读权但有导出版读权的任务，从 PG14/PG15 的获准文档 Reader 读取，不强跳 PG11 或泄漏内部 PM 标题。
+
+“模块已安装”不等于 `knowledge eligible`。records-only 只读写内部复盘；publishing 未装不渲染导出按钮；retrieval 未启用不请求使用清单。停用新生成/导出后按历史读权显示，PG17 保留已发操作的未知效果；隐藏 Tab 不能代表撤销 Git 内容。
 
 <a id="fe04"></a>
 ## 4. 视觉规范、布局与响应式
@@ -389,6 +414,12 @@ scan.reporting 仅依赖 core、已交付仓库/读制品合同。scan.auto-issu
 CI 必须分别构建并检查产物/启动请求：`L2 无 repair/scan`、`L3 repair-only 无 scan`、`L3 scan-report-only 无 repair`、`L3 scan-auto + repair`。未选特性的 lazy import 也不能从共享 barrel 被引入。依赖反例应含 repair→scan 和 reporting→repair，不能只检查 Intake。测试这些档案沿用主方案 PG-G12/AC-129 的前端部分，不新增后端迁移器。
 
 L2 选择固定 React/TS/Vite/Ant Design/TanStack 组合即可；Monaco、ECharts、无损导入 Worker、HA SSE 和扩展依赖不强迫首发安装或运行。运行时 schema validator 来自受审构建输出，schema 默认值不是权限默认放行。[F03][F04][F05]
+
+### 5.5 复盘子模块与共享组件（L7）
+
+唯一新增目录为 `web/src/features/postmortem/`，持有结构化编辑、效果只读展示、导出预览与 D17 ViewModel；纯类型/生成 client 放在独立 contracts/postmortem 入口。app 在已选 build 中将其 public slot 装入 PG11/PG13/PG14/PG15；incident、repair、review、scan、kernel 和 shared 不反向 import postmortem 实现或从根 barrel 强制导出。
+
+Approval 外壳通过受审注册表选择 `PostmortemPublicationPanel`，OperationSummary/PRLinkPanel/MarkdownReader 使用原公共契约，不复制提交 Controller、SSE、retry timer 或 Provider 客户端。记录数为零和模块未安装不是同一状态，未安装不能靠失败 API 请求探测。新增 lint/依赖反例纳入 FE-AC-161/178，构建 L2/repair-only/report-only 时不加载新增 chunk。
 
 <a id="fe06"></a>
 ## 6. 启动、SSO 与租户会话
@@ -660,6 +691,7 @@ HA 使用先订阅缓冲、再授权快照/补读的顺序；游标只在相同�
 | Recovery inconclusive | 恢复证据不足 | 恢复成功或失败 |
 | external Issue closed且未核验 | 外部已关闭，平台尚未核验 | 自动修复成功 |
 | unknown且cancel_requested | 已请求停止继续执行；此前效果仍待查证 | 已取消且未发生任何变更 |
+| 文档已合并，文件核验未完成 | 合并已确认，导出内容待核验 | 知识可用或防复发成功 |
 
 ### 10.2 页面通用状态
 
@@ -1159,7 +1191,7 @@ ACK 丢失后允许向原 tab 重传相同数据。网络恢复不自行提交�
 DLS/FLS 或命名空间映射不等价时，禁后台补查但可保留经授权的用户线索；不允许“管理员服务账号能读，所以忽略权限错误”。测试操作显示只读范围、查询预算和测试数据，所有凭据只引用服务端 Secret。
 
 <a id="fe19"></a>
-## 19. [L4] Incident、诊断与证据
+## 19. [L4；复盘 L7] Incident、诊断、证据与复盘
 
 > **首次准入与范围：** L4 一个告警入口/后端，L5 才展示人工 Report 来源；未接部署证据时只提供调查工作台。 [B01：§3、§31]
 
@@ -1206,6 +1238,96 @@ Incident 与 Case 的修复区使用同一 `RemediationDetail/ApprovalReview/PRL
 
 无权查看已有重复问题时，受理报告的响应和页面与正常新报告受理不可区分：不显示 duplicate=true、旧 issue 链接、隐含计数或负责人。涉及隐含存在性的差异不得藏在 Tooltip/埋点中。服务账号与用户权限交集由后端查询计划执行，UI 不拼接租户字符串过滤。
 
+### 19.7 事故复盘 Tab 的范围与首屏（L7）
+
+复盘数据的权威是 B01 §18.8～18.18 与 §24.8。首个界面使用 PG11 的可选 Tab，不要求新的全站复盘列表。从 D17 扩展的 IncidentView 取得可选有权 postmortem_ref，进入 Tab 才请求正文，默认取当前有权版本；没有可见引用显示安全空态，不用创建 POST 查询存在；重复事件返回相同 episode 记录，不让用户因“又一次告警”点击创建重复总结。
+
+```text
+Incident <安全标题> / <环境>          运行恢复：已核验 / 仍待核验
+复盘 PM-… / episode-… / revision 3   内容：待评审   事实截至：…
+[概要] [成因与证据] [处理与效果] [防复发与整改] [仓库导出] [历史]
+常驻提示：原因未完全确认 / 仅验证止损 / 未完成整改 / 文档效果未知
+[补充并保存新版] [生成待审核草稿] [请求内容评审]   （仅合法 Descriptor 才渲染）
+```
+
+恢复、内容审查、文档发布/文件核验、知识资格、整改进度分别展示。生成器失败只影响复盘区，不把 Incident 状态改为 failed；已恢复但原因不明仍可保存、审核并明确局限。未生成草稿显示空态与当前可用动作，无模型时允许已交付的人工填写流程，不制造“必须买 Agent”障碍。[B01：§18.8～18.11]
+
+### 19.8 字段规格与事实校验
+
+| 分组 | 字段和呈现 | 校验/空值规则 |
+| --- | --- | --- |
+| 标识与范围 | PM/episode、服务/环境、文档 revision、事实截止、作者/评审角色 | 稳定 ID 来自服务器；不把严重度标签当新授权 |
+| 影响 | 用户可见现象、窗口、规模、来源、估算/未知、数据完整性 | 未知不填 0；不要求 AI 推断客户数、损失金额或人员责任 |
+| 时间线 | occurrence_time、recorded_at、主体、操作/证据引用 | 时区与高精度原值保留；排序不补出缺失事件 |
+| 成因 | trigger/mechanism/amplifier/detection_gap，逐项状态、支持/反证 | verified/hypothesis/refuted/unknown 独立；“AI 高置信度”不变 verified |
+| 处理 | mitigation/permanent_fix、人工/Agent、失败尝试、取舍 | 操作与部署分开，历史 shell 仅安全文本，不出现“执行此命令” |
+| 代码与部署 | failure/diagnosis/fix SHA、PR、独立验证、部署范围 | 不存在就标缺失；无部署不能勾选永久修复已生效 |
+| 效果 | 前后窗口、分子/分母、单位、样本、版本/负载/step、采样和归因 | 数值按后端固定口径，不在前端重算无依据的改善百分比 |
+| Lesson | ID、适用路径/符号/版本、不变量、反模式、安全做法、例外、回归与复查时间 | 保存为建议不等于硬策略；空泛“以后注意”需补充可验收条件 |
+| 整改 | 稳定条目 ID、owner、期限、Issue/PR、完成标准/证据 | 无 owner/验收标准显示“尚未安排”；外部 Issue 已关不等于措施有效 |
+
+原因字段的编辑只能提出候选/更正，内容评审决定与状态由服务器保存。受限证据仅返回授权摘要或合法不可用理由，不把全量原文放隐藏 textarea/DOM。字段限制由 D17 Schema 冻结，不能用前端无限字符串或通用 JSON 编辑器绕过。生成结果每段显示源引用和截止版本；找不到引用不能偷偷移到当前 main 的相似代码。
+
+### 19.9 保存、生成和版本冲突
+
+“保存新版”提交结构化内容/明确变更，不自动推 Git；草稿只在页面内存，离开提醒并说明未保存内容会丢失。存在既有已发请求时离页不取消服务端生成/导出。新 revision 的预期 head、ETag、原输入 hash 与幂等键固定，409/412 后展示服务器当前版与本地变更，不把 If-Match 自动换成最新后重试。
+
+“生成待审核草稿”先展示读取的事实截止、证据/代码范围、批准模型与估算预算，实际调用同一个 revisions 接口的 generate 模式。不能从 mount、SSE 或状态刷新自动重复生成。结果受理与 revision 生成完成分开；取消只调用获准 Workflow 意图，不宣称外部模型已忘记输入。
+
+比较版本同时显示结构化字段变更和渲染 Markdown 差异。新反证使旧导出可能不再适用时，提供独立“限制后续使用”的获权动作，不能等待下一份长文生成完才处理危险知识。历史内容可读性仍实时检查；更高 revision 号不自动抹去旧评审和发布事实。
+
+### 19.10 内容评审与导出授权分开
+
+内容评审页面展示原因是否核实、反证、效果局限、未完成整改和准确 revision。`postmortem.review.request` 只创建评审待办；`postmortem.review.decide` 由本域保存接受/退回事实，不映射到 task_start 或启动 Agent。拒绝原因必填；“原因尚不确定但记录完整”可由获权评审者接受为带局限复盘，不得因此提升其中假设为通用定律。
+
+发布是第二种意图。先“准备仓库导出版”，后端完成实际脱敏包并返回 export/approval 引用，再进入 PG13 的 `postmortem_publication` 面板。两步分别解释“内容准确性”和“哪些字节向哪些读者披露”；初版不提供前端串两个 POST 冒充原子的一键批准。未来合并交互必须有后端原子合同，用户须同时具备两类权限。[B01：§18.14、24.8]
+
+### 19.11 仓库导出预览与文件核验
+
+导出面板依次选择**已登记且有权的仓库、受限目标 ref、允许文档根和导出档案**。路径由服务端生成，不能粘贴任意 git URL 或填写 `../AGENTS.md`。首个范围默认一个目标、不含全仓库索引同步。提交导出请求会物化包/申请许可，不等于直接 push。
+
+| 必看字段 | 展示要求 |
+| --- | --- |
+| 输入 | PM/revision、内容审核证据、原内容 hash、模板/脱敏策略版本 |
+| 受众 | 当前仓库可见性/获准读者档案、披露审批范围；未知受众阻断 |
+| 目标 | 仓库稳定 ID、target ref、base SHA、专用 docs 分支和允许文件清单 |
+| 实际内容 | 服务器渲染的脱敏 Markdown 原文与安全预览、精确字节数/package hash |
+| 检查 | Secret/PII/路径/非文档变更/受众 gate 的 pass/pending/fail/unknown，带有权证据 |
+| 后续事实 | commit Operation、documentation PRLink、最终 merge/tree/blob 核验、当前资格 |
+
+原文/导出对照只在用户分别有权时显示，不能为了 diff 下发受限原文。未知 blob/hash、未物化正文或缺 gate 时不渲染批准动作；不能拿本地编辑器重新格式化后的字节替代批准包。受理后固定包禁止原地编辑，范围/正文变化新 export generation/批准，原 unknown 留账本查证。
+
+PR 已合并但最终文件 hash 不匹配显示“文档内容漂移，尚不可作为可信知识”；提供查看有权 diff/新修订入口，不提供强推恢复原文。正常 rebase/squash 不由前端比较 SHA 猜失败，读取后端实际 tree/blob 核验。文档不是事故修复 PR，合并不触发 Incident 关闭或整改完成。[B01：§18.15]
+
+### 19.12 知识资格、使用与撤回
+
+文档资格只采用服务器的 `eligibility` 投影及依据，不能由 front matter 的 approved/active、PR merged 或全绿检查拼成 eligible。候选条目展示适用/不适用路径/版本、last_review/review_after、来源 hash、限制原因；无权时不显示隐藏 lesson 数量或内部事故标题。
+
+“撤回后续使用”确认框必须说明：**阻止平台后续交接，不删除 Git 历史、不保证收回远端模型/clone 已读字节、不把已发布效果变成未发生。** 提交 restrictions 的固定 withdraw/require_review 意图、原因、证据、ETag；收到成功后重取资格，原发布 Operation confirmed 继续显示。恢复不能靠一个开关，须按新评审/批准/文件核验合同处理。
+
+PG14/PG15 的“知识使用”子区只读：code_base_sha 与 knowledge_snapshot_sha、实际 lesson/path/blob/revision、适用性、省略/截断、输入交接时间、Agent 采用自报、独立验证各一列。已发送上下文和模型理解不等价；当前无使用清单显示“未提供/该能力未启用”，不是“没有历史事故”。资料不可用与在获准集合中无适用命中分别说明；不提供全库搜索或“把所有复盘加入 Prompt”。[B01：§17.13、18.17]
+
+### 19.13 整改追踪、复查与复发
+
+整改条目沿用现有 Issue/PR/Remediation 读模型，不在复盘页创建自动派 Agent 的旁路。首个增量允许在新 revision 中关联已存在的获权 Issue 并指定完成标准；要创建代码修复仍进入既有授权流程，不能沿用文档批准。状态来源区分“条目已提出”“Issue 已建立”“代码已合并”“措施证据已核验”。
+
+复盘已批准时未完成整改保持可见，期限以服务器时间/时区显示；前端倒计时不自动标逾期终态或升级权限。后续复发关联新 episode，历史观察窗口、处理和因果结论原样保存；新证据可能要求旧规则复查，但不自动宣称旧根因已被证伪。只能在有实际服务端聚合接口时展示知识效果统计，无接口不从当前页计算事故减少率。
+
+### 19.14 异常、空态与可访问性验收
+
+| 场景 | 页面行为 | 不允许的快捷处理 |
+| --- | --- | --- |
+| 事故已恢复、草稿生成失败 | 恢复保持原事实；复盘区错误、原输入和有界重试 | 整页显示故障未恢复 |
+| 只有止损有效/无部署记录 | 分别显示止损结果与永久修复待核验 | 将 AI 补丁写成已生效 |
+| 无流量/采集断流/因果不足 | 效果 inconclusive/局限常驻，允许有局限复盘 | 画零错误率或保证根因 |
+| 内容已评审、无披露权限 | 内容可读，导出动作不渲染或已知 gate 禁用 | 用仓库私有替代受众许可 |
+| 导出仍物化/回执未知 | 明确 generating/request_unconfirmed，原键查证 | 自动换键生成第二个 PR |
+| 文档 PR 关闭未合并 | 平台复盘保留，知识未准入 | 将事故恢复改失败/重开故障 |
+| 文件漂移/知识被撤回 | 历史已发布与当前不可用并列 | 清掉 confirmed/自动覆盖人工修改 |
+| 撤权或模块停新执行 | 清敏感字段；合法历史/未知效果仍可读 | 以隐藏页面冒充取消远端操作 |
+
+表单按概要→原因→处理→效果→lesson/整改→导出顺序提供可键盘导航的标题和错误汇总；保存失败聚焦首个问题。Markdown 预览禁远程资源/HTML/MDX，宽 diff 在局部滚动并有纯文本回退。小屏单列保留目标受众/版本/不可忽略警告，不能只看 AI 摘要就批准；提交确认栏不得遮挡键盘焦点。平时刷新不抢焦点，只有内容/权限变化以有节制的 aria-live 提示并冻结旧决定。
+
 <a id="fe20"></a>
 ## 20. [L2 有界报告；完整阅读器 L3+] 证据阅读器与代码差异
 
@@ -1244,6 +1366,10 @@ Incident 与 Case 的修复区使用同一 `RemediationDetail/ApprovalReview/PRL
 ### 20.6 阅读状态不构成授权证据
 
 前端可记录本次会话已打开哪些 Tab 作为 UX 提示，但不能把“看过 Diff/滚动到底”写成代码安全证明。服务端权限和审批签署范围是唯一授权依据；屏幕上的模型摘要不可替代完整变更与测试证据。
+
+### 20.7 复盘与仓库导出两类 Reader（L7）
+
+沿用同一 SafeMarkdown/ArtifactDownload，但 origin/type 明确为 internal_revision 或 repository_export；读取权限不可互换。包内包含的链接/代码命令不被预取或执行，下载只含用户本次获权的实际导出字节。Markdown 原文、预览和差异必须绑定相同 package/revision；客户端不“美化”后当成批准 hash 对应内容。主模板见 B01 §18.19，不把其空占位下载称为已归档事故。
 
 <a id="fe21"></a>
 ## 21. [L3 repair] 统一审批与授权变化
@@ -1303,6 +1429,20 @@ Agent Claude Code〔已核验 Profile〕/ 发布方：平台
 
 L3 repair-only 的 Approval 列表在没有 scan 迁移时必须可打开、确认 fixture、查看批准范围、等待 PRLink；无 `case_id` 不等于接口错误。REPORT_ONLY 纯报告档案反而不能装配这些路由和数据请求。
 
+### 21.7 文档发布审批 Kind（L7 D17）
+
+L3 的两种修复审批保持原合同。只有本次 publishing 能力已注册才在 PG13 允许 `postmortem_publication`；使用独立 Panel 和判别 DTO，未认识 Kind 的旧客户端只读安全提示，不回退 task_start。退出/重新认证后也不自动重放批准。
+
+| 必须绑定并显示 | 文档专用规则 |
+| --- | --- |
+| PM / revision / export | 原内容评审证据和准确输入摘要，不接受当前最新版自动替换 |
+| package/file manifest | 真实 Markdown 字节/hash、路径/类型/大小、完整且可读的预览 |
+| target repository/ref/base | 稳定身份、批准基线、专用分支；不沿用修复 PR 目标假设 |
+| audience/redaction policy | 仓库读者范围、脱敏策略 revision、披露 gate；原证据可读不等于可导出 |
+| expiry/ETag/version | 当前主体与期望审批版本，越期/撤权/包变化重新确认 |
+
+主按钮为“同意向该仓库提交这份文档 PR”，不是“启动修复”“文档已合并”或“知识已生效”。批准后任何包/目标/受众/基线影响变化，都让原确认失效；不能只把 Kind 字符串替换后复用 patch hash 的表单/后端 SQL。原 task_start 专用示例仍拒绝本 Kind。[B01：§18.14、23.3、24.8]
+
 <a id="fe22"></a>
 ## 22. [L3 单 CLI；其他 L7] Agent 目录与运行详情
 
@@ -1347,6 +1487,12 @@ L2 不注册 Agent 页面，也不请求 Agent 列表。L3 只展示一个本 re
 ### 22.4 手工交接
 
 仅当明确启用 `manual_handoff` 才显示交接说明、可获准下载的上下文及人工结果关联入口（D08）。状态为等待人工，不计为自动运行成功。用户上传补丁/PR 仍需后端核验目标、SHA、范围与测试，不接受一个任意 PR URL 就结束任务。
+
+### 22.5 Agent 知识清单与自报/验证分层（L7）
+
+PG14/PG15 按 D17 提供的有权 Manifest 只读展示实际知识输入。固定两个 SHA、lesson/revision/blob、采用理由与省略原因，不假设所有 Profile 能自动遍历仓库。平台外 Agent 的 AGENTS.md/CLAUDE.md 导航由维护者独立审核；本页不能从历史日志自动修改指令或下载未知插件。
+
+三个结果分别展示“资料已交接”“Agent 自报采用/不适用”“独立回归结果”，不合成一个已学习百分比。新资料/撤回发生后只读取 Gateway/策略决定的等待或取消状态，不用前端 setInterval 重新提交同任务。
 
 <a id="fe23"></a>
 ## 23. [L3/L4/L7 分档] PR 评审、部署与恢复闭环
@@ -1397,6 +1543,10 @@ manual_resolution、operational_resolution、accepted_risk 与自动恢复证据
 | 等 Agent 停止 | cancel Operation 与 Gateway Run 的终态核验分别读 | 请求已受理不等于已停止；新 Agent 接管由后端允许 |
 
 普通页面刷新是读取本平台快照，不登记新的 Watch/Operation/Timer；用户明确“只读查证”才调用相应固定 API。关闭策略留在来源域，通用 PRLink 不因为一个 PR merged 就关闭所有 Incident。[B01：§19.8]
+
+### 23.6 文档 PR 与修复 PR 不共用完成含义（L7）
+
+PRLinkPanel 仍只显示后端核验事实，但 documentation 变体不加载修复必需 PR/部署完成进度。文档分支提交 confirmed、PR merged、文件 verified 与知识 admissible 分别显示；不是所有资料都因合并立即 eligible。Incident 的恢复关闭和整改任务的完成来自原 owner，不由文档 PR 改写。
 
 <a id="fe24"></a>
 ## 24. 通用外部操作中心
@@ -1465,6 +1615,12 @@ Runbook 链接按同一个故障分类注册：请求可能已生效、读权限
 
 查证权限与发送权限分开：用户获准申请只读对账不意味着可用 write Secret，反之读身份撤销时不得提示“用发布凭据再试”。UI 只提交 operation ID 和版本，Secret Broker role、lease epoch、否定证据均由服务端控制。没有网络事件时有界快照轮询仍可看到恢复结果，UI 不把 MQ 提示作为唯一可见更新来源。
 
+### 24.7 复盘操作只扩类型，不扩重试器（L7）
+
+文档的 `scm.docs.commit`、documentation `scm.pr.create` 及通知仍用同一 PG17/ActionController。显示 export、固定目标/包和有权核验摘要；sending 过期后等服务端恢复，不能浏览器到点切 unknown 或 Execute。未知写入的“重新生成复盘”不是修复办法，两动作分开。
+
+已发布文档后来 stale/withdrawn 时，Operation confirmed 原样保存；新资格限制只显示在文档业务投影。查询者仅有操作元数据权限时不给出原事故标题/正文。文档查证仍用原获权 reconcile/retry-request，没有新的强制发布按钮。
+
 <a id="fe25"></a>
 ## 25. [L2 单通道只读；其他 L7] 通知渠道、订阅与投递
 
@@ -1503,6 +1659,10 @@ L2 采用管理员已登记的嵌入模板/唯一目标及覆盖，只读有效�
 列：事件、模板版本、Provider、脱敏目标、业务状态、operation 状态、受理/送达/已读时间（仅能力存在时）、阻塞原因。详情把 Delivery 业务字段与统一操作组件组合，不另有通知重试倒计时。
 
 “不支持已读回执”是能力说明，不显示 read=false 或失败。accepted、delivered、read、policy_blocked、suppressed 分开；点击已读不批准修复。外部发送 unknown 时只查证，用户有权的重试申请走统一 API；通知故障不重启 Agent 或回滚已创建 Issue。
+
+### 25.5 复盘通知内容（L7，复用当前已交付通道）
+
+选定复盘增量只增加需复盘、待审、披露受阻、文档 PR、文件核验、知识限制和整改提醒的安全模板。接收范围和链接只取本次有权目标；不贴原始日志/完整事故或签名下载 URL。文案“已核验入库”不写“已彻底解决”；送达/已读不推进内容评审或文档审批。L2 不因为模板在设计中存在而新增测试发送或第二个通道。
 
 <a id="fe26"></a>
 ## 26. [L2 只读设置；管理写入后续] 身份、策略、预算与插件设置
@@ -1578,6 +1738,12 @@ PostgreSQL 默认模式展示正常工作档案，不出现“需要 NATS 才能
 本章所有 installed 字段均是服务端已装配事实，不是 UI 的“安装/删表”按钮。L3 repair-only 不从状态面板探测扫描表；REPORT_ONLY 新档案没有 repair 页面/数据源；GO 才能呈现 scan.auto_issues 与同一 repair 的关系。扫描 reporting 与 auto_issues 是同模块不同子清单，不是第二个扫描产品状态机。[B01：§22.13]
 
 已有装配关闭新执行后，历史读权、持续查证和必要取消仍从服务器获取；不能把 modules.scan.enabled=false 转成关闭所有 repair 或把 unknown 卡片移除。管理页最多展示批准的依赖状态与操作影响，真实迁移由受控部署完成，不能从前端发送任意 migration group 或 SQL。
+
+### 27.6 Postmortem records/publishing 与读取开关（L7）
+
+在既有模块只读视图显示 records、publishing、new_generation_allowed、new_export_allowed、history_read 与 knowledge retrieval 的已核验能力，字段名/组合由 D17 冻结。安装不是一个前端即时开关；默认不提供通用 modules/postmortem 写接口，避免超出主设计实际路径。
+
+未安装不请求 PM 表/端点；仅 records 可以人工记录/内容审核但不出导出批准；publishing 停新执行仍须保留原 docs Operation/PRLink 的有权查证。retrieval 关闭不意味着已经发送到模型的资料被收回。L2、repair-only、scan-report-only 的路由/代码/启动测试均不依赖复盘，PG11 也不能因为没有复盘表导致 Incident 打不开。
 
 <a id="fe28"></a>
 ## 28. API 对照、分切片合同与联调清单
@@ -1693,10 +1859,11 @@ Action Descriptor D03 只能给固定 `action_id`、enabled/reason、当前版�
 | L5 intake | observation-inputs/parse、observation-reports/revisions/retry-collection/cancel、source-bindings | 无网络 parse/只读有界补查，报告受理不等于修复 |
 | L6 extension | /intake/extension + 固定扩展消息，复用 Report API | 无源站 Cookie/直连 Provider，不新增专用“扩展修复 API” |
 | L7 对应增量 | recovery-checks 自动运行、workflow-definitions 目录、多 Provider/插件/HA 等 | 各自 capability 与合同通过才启用，不能由文档全表注册 |
+| L7 postmortem-knowledge | B01 §24.8 的 PM/revisions/review/exports/restrictions 与既有 Approval/Operation | D17、既有 D 子集，只在 PG 子区域显式注册；不静默变更 B02 |
 
 表中简写在 API 路径使用 `/api/v1/`；浏览器页面路径另在第3章。主方案没有给出的 approval 单对象读、agent-runs/remediations 列表/详情等明确属于 D04，不能从名字自行猜并上线。主方案存在宽接口不表示本次 release-scope 注册了它。
 
-### 28.6 D01–D16：保留编号，按切片冻结
+### 28.6 D01–D17：原编号保留，复盘只在 L7 冻结
 
 | ID | 保留的语义 | 首次必需子集 / 后续部分 | 无合同的安全降级 |
 | --- | --- | --- | --- |
@@ -1716,6 +1883,7 @@ Action Descriptor D03 只能给固定 `action_id`、enabled/reason、当前版�
 | D14 | 扩展消息、发行ID/origin、nonce/ACK | **L6**首个扩展发行；不是NOW-08前置 | 回退平台URL/JSON，不放宽origin |
 | D15 | 严格导入/无损解析/revision | **L5**标准输入；L6复用 | 明确拒绝/补充，不执行任意URL/JSON |
 | D16 | 公共运行时配置、资产、CSP兼容 | **L2 必需**同源base/build/合同；extension字段仅L6 | 固定同源，不从query改API origin |
+| D17 | 复盘内容/导出/文档 Kind/资格及知识使用 | **L7 选定复盘增量**；复用 D02/03/04/08/09/10/13 的所需子集，不进入 NOW-08 | 未有同 commit/client/后端实装就不注册子区域或渲染动作 |
 
 D02 的后续只读能力视图建议区分 `scan.reporting`、`scan.auto_issues`、`repair`、`history_read`、`new_execution_allowed`；这些是**待冻结的展示字段**，不是增加业务状态机或允许网页安装迁移。`scan.gate_status` 仅在获权设置展示，GO 之外的所有执行能力由服务器计算。门禁签署并非前端勾选框。
 
@@ -1735,6 +1903,25 @@ D02 的后续只读能力视图建议区分 `scan.reporting`、`scan.auto_issues
 本卡完成后，NOW-08 才继续“L2 页面接线 → 当前 scope 真实闭环与发布报告”。不建立 FE-L2-0.2，不另列 FE 里程碑；B02 修改若被需要，就在既有协议版本治理下处理，并保留原文件历史。**当前签署槽位为空，本次只交付可执行的清单与设计，不宣称前后端已经确认。**
 
 不属于当前接口的 D 字段不能由前端塞入 capabilities/请求头自行验证。仅编译通过的 client 也不证明后端具备动作；必须用测试实例返回校验。只读兼容降级允许排除非必需增强，不允许把首发必需字段未实现伪装成发布通过。
+
+### 28.8 D17 是 L7 增量的联调门禁，不是 B02 新版
+
+本节引用 B01 §24.8，不再建立第二套 /pm/fix 或 /knowledge/execute API。D17 不追加到 §3.2 的 L2 所需 D 集，不产生 FE-L2-0.2；NOW-08 的原合同卡不变。被选定的 L7 增量在同一原工程的 OpenAPI commit 中冻结下表、生成 client/validator、验证真实后端返回，再解锁对应 PG 子区域。
+
+| 子合同 | 必需字段/动作 | 与原合同的隔离 |
+| --- | --- | --- |
+| 能力/装配 | 本增量是否交付、records/publishing、历史读、新生成/导出/检索、合同 revision | 单独已签 capabilities 子视图；不加为 web-l2-v1 必填；不由 milestone 推断 |
+| PMView / RevisionView | IncidentView 的可选有权 postmortem_ref；id/episode/revision、内容/输入 hash、fact cutoff、原因项/效果口径、整改 refs、ETag/as_of、字段可见性/allowed_actions | 版本和原始高精度值保字符串；不要暴露无权原文或不可见重复项数量 |
+| 内容命令 | POST PM/revisions/review-requests/review-decisions；原输入、模式/理由、expected version、幂等 | 内容评审是本域事实，不是 task_start 或写仓库授权 |
+| ExportView / ExportRequest | export id、revision、rendered artifact/package hash、受众/脱敏 policy、repo/ref/base、文件清单、approval/operation/prlink refs | 物化完准确字节才有批准动作；新输入新意图，不在前端现场重算批准包 |
+| 文档批准 | 既有 decision 路由的 `postmortem_publication` oneOf；文档绑定、expiry、ETag、当前 gate | 扩展后端注册 Kind 与受控前端 Panel；不改变 L3 两类请求或 L2 六项动作 |
+| 文件核验/限制 | merge/tree/blob、核验时间、当前资格/revision、withdraw/require_review reason | eligibility 为服务端只读结论；限制命令不得传任意 status/URL |
+| KnowledgeUseView | task/run、code/doc SHA、lesson/blob/revision、selection/交接、采用自报、独立验证、省略/不可用原因 | 只返回当前有权清单；缺数据不冒充无历史问题或自动学习 |
+| 消息/错误/制品 | 复用实时失效事件、原 safe artifact、当前通道；PM_INPUT_STALE / EXPORT_CONTENT_DRIFT 等待冻结安全错误 | 不新建 SSE 事件系统；没有 D17 消息细化时仅有权 REST 刷新 |
+
+主设计现有路径详见 B01 §24.8：`incidents/{id}/postmortems`、`postmortems/{id}` 及 revisions/review-requests/review-decisions/exports、`postmortem-exports/{id}` 及 restrictions；常规前缀 `/api/v1`。历史版本读取包含 `/postmortems/{id}/revisions/{revision}`。路径存在于设计不代表实装；所有方法/operationId/错误/required/null 与下游 artifact 必须进入同一提交。
+
+**Done 证据：** 选定 L7 build 的原 Page ID 子区域清单、固定主/前端/B02 摘要、D17/所需 D 子集 Schema、同一 OpenAPI commit、再生成零差异的 client/validator、后端真实权限/ETag/包/Kind 返回、双方签署、FE-AC-161～180 与主 AC-187～206 的对应报告。未完成只允许隔离合成 fixture，不把假 Descriptor、空 hash 或 Mock 当生产可用。本文不代填任何这些证据。
 
 <a id="fe29"></a>
 ## 29. 核心 TypeScript 契约与组件 API
@@ -2070,6 +2257,66 @@ export type ApprovalIntent =
 
 请求字段仍需D03/D08冻结到真实DTO；该union仅阻止在客户端把发布审批当成没有补丁的启动审批。服务器CAS、权限、类型、输入哈希/最终提交门禁独立执行；不得把主方案task_start示例当通用发布批准函数。L2构建不引入该业务界面。
 
+### 29.7 文档审批与知识展示的独立类型（L7 D17）
+
+以下纯 TypeScript 片段只示范第三 Kind 和只读状态文案，不是 generated client 或服务器授权。单独编译在 postmortem contracts 入口；L2 与 L3-only build 不从根 barrel 引入。实际 oneOf 在 D17 冻结，unknown 状态不猜为成功。文案 helper 只渲染服务器投影，不计算知识准入。
+
+```typescript
+// file: postmortem-contracts.ts
+export interface PostmortemPublicationIntent {
+  readonly kind: 'postmortem_publication';
+  readonly approvalId: string;
+  readonly expectedVersion: string;
+  readonly etag: string;
+  readonly inputHash: string;
+  readonly postmortemId: string;
+  readonly revision: string;
+  readonly exportId: string;
+  readonly contentReviewArtifactId: string;
+  readonly packageHash: string;
+  readonly fileManifestArtifactId: string;
+  readonly targetRepositoryId: string;
+  readonly targetRef: string;
+  readonly baseSha: string;
+  readonly audiencePolicyRevision: string;
+  readonly redactionPolicyRevision: string;
+  readonly expiresAt: string;
+}
+
+export interface PostmortemLabel {
+  readonly text: string;
+  readonly tone: 'neutral' | 'warning' | 'positive';
+  readonly understood: boolean;
+}
+
+export function knowledgeEligibilityLabel(status: string): PostmortemLabel {
+  switch (status) {
+    case 'eligible': return { text: '可作为本次获准知识候选', tone: 'positive', understood: true };
+    case 'not_admitted': return { text: '尚未准入知识', tone: 'neutral', understood: true };
+    case 'requires_review': return { text: '需要复查，暂停推荐', tone: 'warning', understood: true };
+    case 'withdrawn': return { text: '已限制后续使用；历史发布仍保留', tone: 'warning', understood: true };
+    case 'unavailable': return { text: '当前无法核验知识资格', tone: 'warning', understood: true };
+    default: return { text: '资格状态不受当前客户端支持', tone: 'warning', understood: false };
+  }
+}
+
+// Only local rendering readiness. Server must independently check ACL, scope and CAS.
+export function mayRenderPostmortemActions(readiness: Readonly<{
+  includedInBuild: boolean;
+  capabilityUnderstood: boolean;
+  contractFrozen: boolean;
+  generatedClientMatches: boolean;
+  backendImplemented: boolean;
+  objectReadable: boolean;
+}>): boolean {
+  return readiness.includedInBuild && readiness.capabilityUnderstood &&
+    readiness.contractFrozen && readiness.generatedClientMatches &&
+    readiness.backendImplemented && readiness.objectReadable;
+}
+```
+
+返回 true 也不允许任意动作；随后仍逐项检查 D03/D17 的真实 Descriptor、当前状态/ETag/主体与已读包，只有固定注册 action 才能进入 Controller。文本里的 eligible 不代表整个事故 resolved、文档所有后续版本可信或 Agent 一定遵循。
+
 <a id="fe30"></a>
 ## 30. 安全、隐私与内容处理
 
@@ -2123,6 +2370,12 @@ Token 输入框不回填星号当真实值。编辑 Secret 使用明确的“保
 ### 30.5 安全审查的交付条件
 
 每次增加新的源平台、组件、插件 UI、外链入口、下载格式、跨 origin 访问或存储方式，必须更新威胁模型和负面 fixture。依赖漏洞扫描与锁文件审查是最低要求，不将“扫描无告警”当作权限/幂等正确性的证明。关键安全例外有 owner、原因、到期、测试和撤销路径；普通项目配置不能下调平台安全下限。
+
+### 30.6 复盘内容、披露与知识注入的安全补充（L7）
+
+内部复盘/受限证据与 repository-safe 导出版分权限请求、分缓存；普通仓库读者不通过导出版看到隐藏 Incident 的名称/关系。脱敏预览、Markdown 渲染和下载绑定固定包，生成模型与恶意源码不能修改 UI action、发布目标、Agent 指令文件、CI 或验证命令。
+
+知识资格取当前后端投影，front matter 自报 approved 不作可信证据；受审 PR 增加的规则不用于自我评审。撤回立即阻止新交接，但不能承诺撤回已复制/clone/送模型的字节。取证/纠正产生新 revision，已有 confirmed 操作保留；UI 隐藏或 session 清理不代表远端已取消。安全负例明确映射 FE-AC-166～179 与主 AC-192～205。
 
 <a id="fe31"></a>
 ## 31. 可访问性、国际化与性能
@@ -2471,6 +2724,7 @@ Playwright 扩展测试采用其支持的 Chromium persistent context 路径；�
 | L5 postgres-intake | 021,022,023,026,061,062,063,064,065,066,067,068,069,070,081,082,089,112,113,160 | 五平台各至少一组实际来源URL或JSON；扩展未发不用跑MV3 |
 | L6 浏览器扩展增量 | 002,024,071,072,073,074,075,076,077,078,079,080,112,114,123,124,137,140,145,160 | 声明增强的平台才做相应DOM漂移；商店/企业实际发行分别验 |
 | L7 HA实时增量 | 003,004,011,012,013,015,020,031,032,033,034,035,036,037,038,040,119,133,135,139 | PG或JetStream按声明档案；019等既有权限门禁仍作为核心回归 |
+| L7 postmortem-knowledge 增量 | 161,162,163,164,165,166,167,168,169,170,171,172,173,174,175,176,177,178,179,180 | 对应主 AC-187～206；已有安全/操作回归继承，L2 不做复盘 |
 
 L7其他Provider/WhatsApp/自动恢复每次只选当前增量，再从原清单组合15～25个代表例和该Provider真实契约；没有选择的L7能力不成为其他发布前置。上表中的复用场景需参数化固定对象，不修改原ID的业务目的。
 
@@ -2478,9 +2732,38 @@ L7其他Provider/WhatsApp/自动恢复每次只选当前增量，再从原清单
 
 构建锁/供应链 → 生成合同与diff → TypeScript strict → 模块/网络边界正反例 → 当前scope单元/协议/组件 → CSP/资产预算 → 当前scope真实浏览器/前后端E2E → 人工键盘/读屏/缩放 → 发行报告。L2无repair/scan/Intake/Feed构建是必需；L3加入repair-only、report-only、auto-issues相应档案；L5/L6才加入导入/扩展，不串成“所有功能测试跑完才能首发”。
 
-每项输出 `passed / failed / not_run / not_applicable`，后者须引用当前scope未交付原因；未冻结DTO/未部署接口不能写passed。新增能力不能靠隐藏测试失败同时保留按钮上线。主方案186项AC与FE-AC160项分别追踪，本文件不修改后端验收编号或伪造PG/Provider通过证据。
+每项输出 `passed / failed / not_run / not_applicable`，后者须引用当前scope未交付原因；未冻结DTO/未部署接口不能写passed。新增能力不能靠隐藏测试失败同时保留按钮上线。主方案206项AC与FE-AC180项分别追踪，本文件不修改后端验收编号或伪造PG/Provider通过证据。
 
 前端的无权并案检查必须验证状态码、文案、链接、数量、时序提示均不暴露已存在机密对象；后端还需测试响应体/时延统计等更广的存在性侧信道，UI不能独自证明不存在。复用数据层/Provider测试不省略真实浏览器里的输入精度、字段撤权和误导状态文案。
+
+### 32.7 复盘增量验收（追加 161～180，不覆盖原 160 项）
+
+下表在选中 L7 复盘增量时执行；其中“未安装不依赖”是已有核心隔离套件的参数化负例，不要求 L2 实现复盘。原 FE-AC-001～160 每行/身份保持不变；PM 主验收已在 B01 §30.11 正式追加 AC-187～206。本节不新建全球 P0 池，也不把预留字段或文档示例当作已通过。
+
+| 编号 | 场景 | 必须观察到的结果 | 验证方式 | 适用 / 主 AC |
+| --- | --- | --- | --- | --- |
+| FE-AC-161 | L2/repair-only/report-only 或 Incident 未装复盘 | 无复盘 Tab/chunk/API/知识必填；原 build 与六项动作不变 | 构建/联调 | L7 选定复盘增量；主 AC-204 |
+| FE-AC-162 | 同 episode 重复告警、人工提交及严重度升降 | 读取/引用同一 PM；不新增重复草稿/PR；降级不删除待办 | 契约/E2E | L7 选定复盘增量；主 AC-187 |
+| FE-AC-163 | 只有 resolved 告警或 Agent/PR 完成 | 阶段性草稿、恢复仍待核验；不显示原因/修复已确定 | 组件/E2E | L7 选定复盘增量；主 AC-188 |
+| FE-AC-164 | 原因缺证据或出现反证/无完整复现 | 区分 hypothesis/refuted/unknown；内容接受不将假设升为 verified | 组件/契约 | L7 选定复盘增量；主 AC-189 |
+| FE-AC-165 | 无流量/采集断流/口径改变与仅回滚恢复 | 效果不足、止损/永久修复/整改分开，不画零错误率或虚假改善 | 组件/数据契约 | L7 选定复盘增量；主 AC-190/191 |
+| FE-AC-166 | 可读事故但无目标受众披露权 | 不显示有效导出动作；不下发无权原文/隐藏计数/预签名链接 | 安全契约 | L7 选定复盘增量；主 AC-192 |
+| FE-AC-167 | 生成内容含秘密、恶意 Markdown/命令或外链 | 拒绝/脱敏和安全展示，不执行/预取，不生成新工具许可 | 安全组件 | L7 选定复盘增量；主 AC-193 |
+| FE-AC-168 | 文档批准误用 task_start/patch Kind 或包目标改变 | 独立判别 DTO/表单，冲突重新阅读，不能沿用旧批准 | 类型/契约/E2E | L7 选定复盘增量；主 AC-194 |
+| FE-AC-169 | 保存/导出回执丢失或 sending 过期 | 显示两层未知，原键查证；不重生成正文/重复 PR | 故障/E2E | L7 选定复盘增量；主 AC-195 |
+| FE-AC-170 | base 前进、人工编辑文档或分支冲突 | 保持原 hash/diff，需新 revision/批准；无强推覆盖按钮 | 契约/E2E | L7 选定复盘增量；主 AC-196 |
+| FE-AC-171 | 文档 PR 合并但错误分支/blob 不符/手改 approved | 合并与文件核验/知识资格分离，不显示可用或事故已解决 | 组件/契约 | L7 选定复盘增量；主 AC-197 |
+| FE-AC-172 | 代码基线旧 release，知识来自较新获准 SHA | 双 SHA 与适用性明确，不把知识 main 代码并入当前修复 | 组件/契约 | L7 选定复盘增量；主 AC-198 |
+| FE-AC-173 | 知识候选超限/权限收窄/读取不可用 | 有权清单、省略/截断与不可用分开；无全库数量或隐式数据外发 | 安全/组件 | L7 选定复盘增量；主 AC-199 |
+| FE-AC-174 | 文档要求自动改 AGENTS.md/CLAUDE.md 或关闭检查 | 只作为不可信建议显示，实际导出允许路径与验证门禁不放宽 | 安全联调 | L7 选定复盘增量；主 AC-200/201 |
+| FE-AC-175 | 文档 PR 触发 Review/重复通知或新整改建议 | 不自动再派同事故 Agent/生成复盘；复用原授权/通知/操作 | 契约/E2E | L7 选定复盘增量；主 AC-202 |
+| FE-AC-176 | 内容已评审但整改未完成，或复发产生新 episode | 未完成项和历史保留，新 episode 可追溯，文档评审不关闭整改 | 组件/E2E | L7 选定复盘增量；主 AC-191/203 |
+| FE-AC-177 | 撤回知识后原文档曾 confirmed/已被任务读取 | 当前限制与历史发布并列；不承诺撤回远端字节，原 Manifest 保留 | 安全/E2E | L7 选定复盘增量；主 AC-203 |
+| FE-AC-178 | D17 未签署、client 不同 commit、后端缺字段/假 Descriptor | 不渲染动作、不进真实联调；不改变 B02 三事件/必填/会话 | 静态/契约 | L7 选定复盘增量；主 AC-205 |
+| FE-AC-179 | 窄屏/键盘读屏、编辑冲突或证据撤权 | 关键目标受众/版本可读，焦点不遮挡，失权清内容，重载不自动批准 | 无障碍/安全浏览器 | L7 选定复盘增量；主 AC-192/194/205 |
+| FE-AC-180 | 真实复盘到文档合并并被后续任务使用 | 显示实际包/PR/blob、Manifest 交接、Agent 自报与独立回归各自事实 | 真实端到端 | L7 选定复盘增量；主 AC-206 |
+
+该增量的代表集正是 161～180 这 20 项，并继承当前已交付的会话/权限/幂等/CSP/框架回归；无需新增另一张实施路线。每份结果保留前后端 build、同一 OpenAPI/Schema commit、合成/实际授权样本、浏览器/Agent/SCM 版本及 passed/failed/not_run/not_applicable。
 
 <a id="fe33"></a>
 ## 33. 构建、发布、私有化与兼容
@@ -2550,6 +2833,12 @@ L2仅一个API副本；部署采用不重叠提供服务或明确维护窗口。
 
 FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改号；已交付后端缺当前必要DTO时保持升级/只读说明，不据文档版本推断兼容。返回旧构建前检查合同与资产，禁止恢复旧可写菜单绕过新scope。
 
+### 33.8 复盘增量的升级、旧客户端与回滚
+
+按 records/publishing 子集固定静态产物/Schema，旧浏览器不知道文档 Kind 不显示审批，原 L2 build 不因增量上线被迫加载 PM 代码。不能把后端新字段塞进旧 B02 必填；需要协议变化走双方签署升级。
+
+撤回新 PM 前端资源不停止后台已发文档效果；操作中心/已交付安全壳须能表达未知和有权历史。发生包 hash 或渲染差异时不复用旧批准，无论差异源自模板、UI 更新或人工修改。部署回退不删除 Git 内容、任务使用 Manifest 或已做的资格限制。
+
 <a id="fe34"></a>
 ## 34. 依附主路线的交付映射与责任
 
@@ -2571,6 +2860,7 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 | L5 | 五平台URL/JSON标准导入与Report/权限/幂等 | 不等待五套DOM/浏览器扩展 |
 | L6 | 通用安全扩展交接 + 首个声明页面增强 | 其余来源仍用获准导入 |
 | L7 | 本次被批准的单项Provider/页面/HA/自动恢复增量 | 不将所有L7目录同时变成必做 |
+| L7 已选复盘增量 | 先 D17/同一 OpenAPI/client/后端实装，再 PG11 内容与导出、PG13 文档 Kind、PG14/15 使用、PG17 证据和 20 项验收 | 依主 §31.6，非 NOW-09；不增加 L2 页面或平行 PM 路线 |
 
 ### 34.2 按当前 scope 应交付的工程资产
 
@@ -2595,7 +2885,7 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 <a id="fe35"></a>
 ## 35. 需求追踪与前端 ADR
 
-### 35.1 与主方案 v1.6 的可追踪关系
+### 35.1 与主方案 v1.7 的可追踪关系
 
 | 主需求/架构约束 | 本文落点 | 主要页面组 | 关键合同/验收 |
 | --- | --- | --- | --- |
@@ -2607,6 +2897,7 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 | 受控 Agent 和单一业务写者 | 第 21、22、23 章 | PG13/14/15/23 | D03/D04/D08；FE-AC-091–100 |
 | 合并与生产恢复两个闭环 | 第 19、23 章 | PG11/12/14 | D03/D08；FE-AC-097–100 |
 | 五类通知、身份与同意分离 | 第 25、26 章 | PG18/25/26 | D09/D10；FE-AC-107–110 |
+| 事故复盘/文档与防复发知识（主 FR-37～40） | 第 3.5、5.5、19.7～19.14、21.7、22.5、28.8、32.7 及 33.8 节 | 原 PG11/13/14/15/17 子区域 | D17 与原 D 子集；FE-AC-161～180 → 主 AC-187～206 |
 | 通用 ExternalOperation/Watch | 第 8、10、24、29 章 | PG17 + 各业务嵌入 | D01/D03；FE-AC-021–030、101–106 |
 | PostgreSQL默认、L2快照、L7独立Feed扇出 | 第9、27、33章 | 已交付页面/PG30 | D07-L2/HA；FE-AC-031–040、119、143–146 |
 | 数据化工作流/只读定义 | 第 27 章 | PG16/28 | D04；FE-AC-117–118 |
@@ -2635,6 +2926,9 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 | FE-ADR-012 | 工作流定义只读 | 任意 DAG 编辑/重放/手动改 lease | 后端正式提供受治理定义产品以后重新设计 |
 | FE-ADR-013 | 编译期 Schema 校验器 + CI 边界 | 动态 eval、远程 `$ref`、口头模块约定 | 不放宽；本地固定合同升级走审查 |
 | FE-ADR-014（修订） | NOW-01注册表；NOW-08同一OpenAPI/client卡为L2联调门禁 | 先页面后假Descriptor、未实现接口默认可用、另建FE路线 | 所选D子集冻结/后端实现/生成物一致后才接线；B02变更升版双签 |
+| FE-ADR-015 | 复盘是既有 Incident/Approval/任务/操作的可选子区域 | 新全站知识门户、L2 复盘导航或第二个提交器 | 有独立已批准范围才扩入口，不改变主路线 |
+| FE-ADR-016 | D17 后续合同与 document Kind 独立，B02 保持 | 文档批准当 task_start、静默扩展 L2 capabilities | 任何破坏原浏览器协议的变化先升版签署 |
+| FE-ADR-017 | 五层事实分别呈现，知识资格只读后端 | 文档合并即根因/恢复/学习完成，front matter 自我授信 | 不放宽；可优化布局但不可合并意义 |
 
 ### 35.3 主要风险与阻断项
 
@@ -2668,20 +2962,22 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 <a id="fe36"></a>
 ## 36. 基线来源、变更校验与未完成项
 
-### 36.1 四份只读输入与版本边界
+### 36.1 输入、当前权威和文件摘要
 
 | 编号 | 文件 | 用途 | SHA-256 |
 | --- | --- | --- | --- |
-| B01 | `ai-devops-platform-design-v1.6.md` | 范围/业务状态/主路线权威 | `6d8c80e5ec410a421a4b6bad19c4a7580cfce679a011f7d6024c33c33383fd6d` |
-| B02 | `ai-devops-frontend-L2-contract-v0.1.md` | 原 web-l2-v1 / snapshot-sse-v1 最小合同，内容不改 | `8ff35c0ddb8c3208a03c8be6f6ef610e0def68e8c46edd41b6ec98054f1a76c6` |
-| B03 | `ai-devops-frontend-design-v1.0.md` | 历史视觉/组件/验收身份来源 | `e2a4b1f3f10effaaf6c161eaf195423c7c6ebcdb12641df1786a287310ad0891` |
-| B04 | `ai-devops-frontend-design-v1.1-for-platform-v1.6.md` | 本次直接修订输入 | `76c669a37a24f7e70b3f3ab580dff265d0c961be8312517627a7b07a1dfc311b` |
+| B01 | `ai-devops-platform-design-v1.7.md` | 当前业务/范围/API 权威；新生成主设计 | `f7b8225ad26a5d390b06380fd627e3b292fd609e3c25539b5b62ba75628cbb85` |
+| B02 | `ai-devops-frontend-L2-contract-v0.1.md` | 原浏览器最小合同，未修改 | `8ff35c0ddb8c3208a03c8be6f6ef610e0def68e8c46edd41b6ec98054f1a76c6` |
+| B03 | `ai-devops-frontend-design-v1.0.md` | 历史规格身份来源 | `e2a4b1f3f10effaaf6c161eaf195423c7c6ebcdb12641df1786a287310ad0891` |
+| B04 | `ai-devops-frontend-design-v1.2-for-platform-v1.6.md` | 直接前端修订输入，未修改 | `2ca728fdee796d7223a2361124ac485e69b7e4d1b126d932d95ab8ee6d2e8d71` |
+| B05 | `ai-devops-postmortem-design-v0.1.md` | 已整合的历史功能提案，未修改 | `a681dc7061761a9bdf85206f361da6654bf8427874c667d156c5e6be935d92e9` |
+| B06 | `postmortem-template.md` | 待填模板，主 §18.19 已内嵌，未修改 | `cc8375a044c37299b0c8b2f8a60266f5f018d7e8e4230c7f266c690fcbbc51cd` |
 
-本次只新增 FE-1.2 与 NOW-01 的机器可读 build 注册表；不修改四份输入，不生成 FE-L2-0.2，也不改写主方案 §26.6 的历史说明。B02 表头的 v1.5 保持原样，主 v1.6 已声明复用。本文 D02/D03 等是同一 OpenAPI 待签署细化；没有真实 commit/双方确认时，不以文档新版本冒充浏览器协议升级或后端已支持。
+原主 v1.6 与 L2 注册表也保持只读。注册表保存历史 v1.6/FE-1.2 摘要，这是范围草案的来源，不是已签新发布。采用主 v1.7/FE-1.3 时只在同一工程清单更新来源/确认记录并保留原 L2 页面、六项动作；本次没有代填签署或生成另一份 L2 路线。PM-0.1 不再作为需要同时维护的当前合同。
 
 ### 36.2 前端技术参考与核查范围
 
-以下保留F01～F19编号，避免改变原有引用身份。框架选择、页面设计、端口和预算主要是本平台设计。本轮是对用户提供设计的定点修订，F01～F19 及对应技术描述保留 FE-1.1 的既有参考；本次未重新在线核查或联调这些第三方版本/页面，不把历史核查记为本轮执行。第三方具体依赖在实现时冻结兼容版本、锁文件与镜像，文档中没有把latest当发布约束。
+以下保留F01～F19编号，避免改变原有引用身份。框架选择、页面设计、端口和预算主要是本平台设计。本轮是对提供设计的整合，F01～F19 及对应技术描述保留 FE-1.2 的既有参考；本次未重新在线核查或联调这些第三方版本/页面，不把历史核查记为本轮执行。第三方具体依赖在实现时冻结兼容版本、锁文件与镜像，文档中没有把latest当发布约束。
 
 | 编号 | 官方/项目资料 | 地址 | 核对内容 |
 | --- | --- | --- | --- |
@@ -2706,30 +3002,28 @@ FE-1.2升级不修改B01/B02原文件，也不将业务Schema按文档版本改�
 | F19 | Chrome Extension service worker lifecycle | `https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle` | Worker 可停止/重启，不能只靠全局变量保存状态 |
 
 
-### 36.3 本次实际文档检查
+### 36.3 本次文档检查（FE-1.3）
 
-| 检查项 | 本次实际结果 | 不代表的能力 |
+| 本次检查 | 实际结果 | 边界 |
 | --- | --- | --- |
-| 四份输入基线 | B01/B02/B03/B04 文件摘要复核；主方案、短合同与两份旧前端原文均未修改 | 不代表业务主方案已实现或 B02 协议已升级 |
-| 章节与 Markdown | 36 章、237 个编号标题、36 个显式锚点/目录链接检查通过；表格列数和围栏正确；Mistune 解析通过 | 未渲染高保真页面、Mermaid 或真实组件 |
-| Page ID / D / AC 身份 | PG01～31、D01～16、FE-AC-001～160 编号唯一；仅 FE-AC-003/004/021/105/134/141/146 做本轮明确的范围/预期细化，其余153行逐字保持 | 160 项仍为待执行验收，不是全部在本 build 内 |
-| NOW-01 注册表 | 31项逐行与 YAML 一致；12个纳入的路由/嵌入子集、14条固定路径、19个排除项；动作白名单恰为六项 | `in_build` 是拟定范围，不是已实现；commit/双方签署仍为空、生产联调门禁为 pending |
-| JSON / YAML / B02 | 2个JSON与1个YAML通过拒绝重复键解析；capabilities样例与B02逐字段一致，未注入D02/D03字段；三种SSE事件名保持 | 不证明 Schema 服务、CSRF、后端真实返回或既有协议已获兼容批准 |
-| 纯 TypeScript 示例 | 3个示例以TypeScript 5.8.3 / strict / ES2022 编译通过 | 不是 OpenAPI 生成 client、React 应用或浏览器扩展构建 |
-| helper 用例 | Node v22.16.0 下 **86 个用例通过**：作用域/版本/快照替换、文案、缺合同/描述符的渲染门禁、动作上下文和B02能力组合 | 不测实际后端权限、HTTP幂等、Cookie/CSRF、SSE parser、ReadScheduler或D07拟议区间的真实实现 |
-| 分档验收索引 | 8组各20个代表场景引用有效；L2索引纳入FE-AC-134且不要求FE-AC-003的多租户实现 | 不免除当前已启用能力的其他安全/核心回归，不是第二张路线图 |
+| 结构与链接 | 36 个主章节、259 个编号标题无重号；36 个显式锚点及目录链接有效；表格/围栏和 Markdown 结构解析通过 | 未渲染 Mermaid 或生成视觉稿 |
+| 原编号保留 | 31 个 PG 身份不新增；D01～16 原行不变，只追加 D17；FE-AC-001～160 与 FE-1.2 逐行一致，追加 161～180，共 180 项 | 不代表所有页面或验收已实现 |
+| L2 合同与范围 | §3.2 注册表、§8.5 六项动作、§28.2 capabilities、§28.4 动作表与 FE-1.2 逐字一致；capabilities JSON 与 B02 逐字段一致；B02 和原 L2 YAML 文件 hash 未变 | 不代替 NOW-08 OpenAPI/client 与双方确认 |
+| JSON | 2 个 JSON 示例通过拒绝重复键的解析 | 不代表真实 API 已返回这些字段 |
+| TypeScript | 4 个纯 TypeScript 示例用 TypeScript 5.8.3、strict、ES2022、CommonJS 编译通过 | 不是完整 React/扩展构建，也不是生成的生产 client |
+| 本次新增 helper 测试 | Node 22.16.0 下 78 个用例通过：知识标签、未知状态降级及 6 个页面就绪条件的全部布尔组合/不可变输入 | 仅本地显示辅助函数；不测鉴权、SSE、HTTP 幂等或真实 Agent 防复发 |
+| 来源与对应 | B01 的 SHA-256 为最终主 v1.7 摘要；原主/前端/增补/模板/B02/注册表文件未改动 | 旧资料未在本轮重新在线核查或联调 |
 
-本轮新增交付件只有本设计和 `frontend-build-L2-registry.yaml`。后者是 NOW-01 的工程清单草案，不是已签署 release manifest、执行配置服务或浏览器协议。未把过去53/89项历史helper结果累加为本次通过数量。
+历史 FE-1.0/1.1/1.2 的 53/89/86 项 helper 报告只属于过去，不累加或冒充本次结果。本次没有生成完整应用、Figma、签名扩展、API 服务或实际事故复盘；布局为可实施的文字规格。
 
-### 36.4 未执行项与 NOW-08 的硬门禁
+### 36.4 当前联调门禁与未执行项
 
-**未执行：** 完整 React/扩展构建与运行、真实架构 CI、OpenAPI 生成 client、真实后端 DTO/CSRF/ETag/allowed_actions、SSO/单租户会话/浏览器多标签联调、实际 SSE parser/ReadScheduler、GitHub/通知/数据库/scan、CSP enforce、键盘/读屏/完整 WCAG、负载/内存、HA 或签名扩展发布。文档 helper 的编译/确定性测试不证明这些系统行为。160 项 FE-AC 与 186 项主 AC 仍为按 scope 执行的验收要求。
+NOW-01/NOW-08 仍仅按 §3.2/§28.7 的 L2 原清单实施，不要求 D17。选定 L7 复盘时才按 §3.5/§28.8 冻结原工程同一 OpenAPI commit、D17/必要 D 子集、生成 client/validator并验证后端后接线。**当前 commit/双方签署/真实后端结果未提供，本次不代签。**
 
-NOW-01 的范围选择在 §3.2 注册表逐项确认；NOW-08 第一张工作卡按 §28.7 将 B02 + D02/D03/D04/D07/D09/D16 + D01 重放策略/D10 单通道最小读取写入**同一 OpenAPI commit**，生成 client/validator并验证后端，再开始真实界面接线。未完成不出现 §13/§24 的业务按钮，不为 FE-AC-003 提前增加租户头，不为工作台空态添加 review.create。
+**未执行：** OpenAPI client 生成与后端实装、React/扩展构建、真实架构 CI、SSO/CSRF/ACL、SSE parser/浏览器、GORM/PostgreSQL/SCM commit/PR/blob、模型事实整理与实际 Agent 知识注入、独立回归、CSP enforcement、人工无障碍、性能/生产效果。180 项 FE-AC 和 206 项主 AC 是按 scope 的验收要求，不是已通过数量。
 
-本次不代填签署人、commit 或联调结果。需要改变 B02 的任何既有协议语义时必须升版并双方签署；没有以新 FE 文件、假 Descriptor 或另写 FE-L2-0.2 绕过门禁的路径。原 FE-1.0 的53项和 FE-1.1的89项 helper检查只属历史，不继承为本轮测试结果。
+本次新增主 v1.7 和本 FE-1.3 作为整合后的权威设计，不覆盖旧文件、B02、模板或 L2 registry，不另外生成 FE-L2-0.2 或新的路线。真实事故的事实、成因、受众授权与发布必须由实施团队和有权人员核验，示例空值不代表已有事故/通过。
 
 ---
 
-**施工顺序：** NOW-01 注册表 → NOW-08 同一合同/client卡 → 当前 L2 页面接线与真实闭环。该句仅引用主任务内的依赖，不改变主方案 L0～L7/NOW-01～08；后续章节是规格库，不是新的排期。本文目录锚点仍为 fe01～fe36。
-
+**使用顺序：** L2 仍是原 NOW-01 注册表 → NOW-08 同一合同/client → 页面与真实闭环；复盘只在主 §31.6 的已选 L7 增量引用本设计后续子区域。36 章是按条件装配的规格库，不是要求一个 build 完成全部页面。
