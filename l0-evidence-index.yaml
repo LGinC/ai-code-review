@@ -4,7 +4,7 @@ status: blocked_pending_approval
 scope:
   revision: L1-core-now01-r1
   file: release-scope.yaml
-  sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+  sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
   approval_ref: null
   approval_status: missing_named_product_and_technical_approvers
 registered_at_utc: 2026-09-16T07:59:36Z
@@ -31,7 +31,7 @@ entries:
   - gate_id: G01
     name: review_probe
     scope_revision: L1-core-now01-r1
-    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
     executor:
       role: OCR 探针执行人
       agent_id: null
@@ -50,6 +50,11 @@ entries:
       model_config_hash: null
       execution_identity: null
       outbound_scope: null
+      llm_test:
+        command: ocr llm test
+        result: pass_user_reported
+        evidence_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
+        does_not_prove: fixed_review_sample_or_runner_probe
     input_hashes: []
     command:
       version: null
@@ -62,13 +67,12 @@ entries:
       exit_code: null
       parsed_schema_version: null
     result: blocked
-    reason: 仅发现本机候选工具事实；批准发行物、固定样本、Runner digest、负责人及真实成功/失败结果均缺失
-    evidence_ref: issue://VTR-7/G01-inputs-required
+    reason: OCR model/provider 已配置且 `ocr llm test` 由用户报告通过；仍缺批准发行物、固定样本、Runner digest、负责人及真实 review 成功/失败原件
 
   - gate_id: G02
     name: scan_scope_decision
     scope_revision: L1-core-now01-r1
-    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
     executor:
       role: 队长协调
       agent_id: 863e742b-5046-4cbb-8026-d4d9b3def516
@@ -94,12 +98,11 @@ entries:
     output_hashes: []
     result: blocked
     reason: 用户已选择现有资源及延期方向，但尚无绑定本 scope revision 的具名产品/技术签署
-    evidence_ref: issue://VTR-7/G02-signoff-required
 
   - gate_id: G03
     name: external_scope
     scope_revision: L1-core-now01-r1
-    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
     executor:
       role: OIDC/飞书环境负责人
       principal_ref: null
@@ -120,19 +123,21 @@ entries:
       feishu_credential_ref: null
       feishu_lookup_or_receipt_capability: null
       send_authorization_scope: null
+      feishu_target_identifiers: supplied_in_issue_not_committed
+      feishu_target_evidence_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
+      endpoint_storage: controlled_reference_only
     input_hashes: []
     command:
       version: registration_only
       argv: null
-    output_hashes: []
     result: blocked
-    reason: 只有企业 OIDC 与飞书自定义机器人类型选择；实际入口、管理员、目标、Secret 引用和权限证据未提供，不执行发送或 IdP 修改
+    reason: 已收到飞书测试目标标识；管理员、Secret 引用、发送授权和查证能力仍未确认，不执行发送或 IdP 修改
     evidence_ref: issue://VTR-7/G03-inputs-required
 
   - gate_id: G04
     name: implementation_discipline
     scope_revision: L1-core-now01-r1
-    scope_sha256: 03a5dc0fc812fa241e29e87eccfda77de9b13bc65b79fffbb2c0e83d5d3f75e4
+    scope_sha256: 73cb1112a7880dd10a767193cf9474c1df024180faeb99c769444c4861161196
     executor:
       role: DevOps
       agent_id: 43da8540-2208-4273-8cfa-50f66210f7f2
@@ -145,6 +150,8 @@ entries:
       table_owner_registry: release-scope.yaml
       handler_review_template: implementation_plan_section_5_3
       pg_test_plan: implementation_plan_section_8
+      endpoint_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
+      endpoint_storage: controlled_reference_only
       postgres_instance: null
       postgres_version: null
       non_privileged_role: null
@@ -156,7 +163,7 @@ entries:
       argv: null
     output_hashes: []
     result: blocked
-    reason: 已登记文件/表归属和 PG-G01～12 计划；真实 PG、非特权角色、版本、阈值负责人及批准引用缺失
+    reason: 已收到 PostgreSQL 私网端点；真实版本、非特权角色、阈值负责人及批准引用仍缺失
     evidence_ref: issue://VTR-7/G04-inputs-required
 
 acceptance:

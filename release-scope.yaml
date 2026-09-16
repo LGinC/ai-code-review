@@ -127,6 +127,23 @@ resource_facts:
     - secret://tenant/sso/client-secret
     - secret://tenant/notify/feishu-webhook-and-secret
     rule: 示例引用不代表真实 Secret；不提交或记录 Secret 值
+  newly_supplied_facts:
+    source_issue_comment: 01a0a961-018f-7d48-bc36-43747cdbcdfe
+    ocr:
+      model_and_provider: configured_user_reported
+      llm_test_command: ocr llm test
+      llm_test_result: pass_user_reported
+      g01_status: still_blocked_review_probe_not_executed
+    feishu:
+      target_identifiers_received: true
+      app_id_storage: controlled_reference_only
+      chat_id_storage: controlled_reference_only
+      values_committed_to_git: false
+    postgres:
+      endpoint_received: true
+      endpoint_storage: controlled_reference_only
+      host_committed_to_git: false
+      version_and_role: unknown
   environment_evidence_location: null
 
 responsibilities:
