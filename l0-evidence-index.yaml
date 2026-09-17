@@ -70,6 +70,11 @@ entries:
     command:
       version: null
       argv: null
+      tool: ocr
+      subcommand: review
+      session_ref: bb117137-d6bc-4bc6-aaff-50e26eb64daa
+      execution_result: user_reported_executed
+      raw_log_storage: unavailable
     outputs:
       success_evidence_ref: null
       failure_evidence_ref: null
@@ -77,8 +82,10 @@ entries:
       stderr_sha256: null
       exit_code: null
       parsed_schema_version: null
+      session_ref: bb117137-d6bc-4bc6-aaff-50e26eb64daa
+      session_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
     result: blocked
-    reason: OCR model/provider 已配置且 `ocr llm test` 由用户报告通过；已登记工程执行 agent 与资源授权人，仍缺批准发行物、固定样本、Runner digest 及真实 review 成功/失败原件
+    reason: 已收到 OCR Review session 引用并记录用户报告执行；仍缺固定 release/二进制与 Runner digest、样本 base/head、输入输出 hash、成功/失败原件，不能标记通过
 
   - gate_id: G02
     name: scan_scope_decision
@@ -128,6 +135,8 @@ entries:
       oidc_client_type: null
       oidc_claims_and_admission: null
       oidc_test_environment: null
+      oidc_configuration_status: deferred_to_backend_project_configuration
+      oidc_configuration_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
       oidc_secret_delivery: secret_manager_vault_kms_reference
       oidc_secret_ref: null
       feishu_credential_delivery: secret_manager_vault_kms_reference
@@ -146,7 +155,7 @@ entries:
       version: registration_only
       argv: null
     result: blocked
-    reason: 已选择 Secret Manager/Vault/KMS 引用方式；实际 OIDC 入口、Secret 引用、发送授权、查证能力和配置接线仍待后端受控提供，不执行发送或 IdP 修改
+    reason: OIDC 配置明确延期至后端项目配置；Secret 仅接受受控引用，实际入口、凭据引用、发送授权和查证能力未提供，不执行外部副作用
     evidence_ref: issue://VTR-7/G03-inputs-required
 
   - gate_id: G04
@@ -168,7 +177,9 @@ entries:
       endpoint_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
       endpoint_storage: controlled_reference_only
       postgres_instance: supplied_private_endpoint_controlled_ref
-      postgres_version: null
+      postgres_server_version_num: "150013"
+      database: ai-devops-platform
+      postgres_version: user_reported_server_version_num
       non_privileged_role: null
       threshold_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       threshold_approval_ref: null
@@ -178,7 +189,7 @@ entries:
       argv: null
     output_hashes: []
     result: blocked
-    reason: 已收到 PostgreSQL 私网端点并指定用户责任人；真实版本、非特权角色和阈值批准引用仍缺失
+    reason: 已记录 PostgreSQL server_version_num=150013 和数据库 ai-devops-platform；仍缺非特权角色属性、双连接/隔离级别、固定阈值及原始报告引用
     evidence_ref: issue://VTR-7/G04-inputs-required
 
 acceptance:
