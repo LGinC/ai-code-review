@@ -130,8 +130,30 @@ entries:
       script_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       script_argv_status: empty_due_to_automatic_Args_collision
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
+      latest_run_meta_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181
+      latest_run_meta_sha256: 9d9d7d3ec11686b7102f0855e2a2560bc9516ed8d1f2e1973f102d50531e97e8
+      latest_run_evidence_ref: issue://VTR-7/comment/01a0af45-b209-79b0-a69c-150990a329d9
+      latest_success_argv_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181#success.argv
+      latest_success_json_ref: attachment://01a0af45-6d20-701f-8648-0de763ccf004
+      latest_success_json_sha256: b0bd77d8ec11ba0eb073daaa58c84d2f329f201d6ce454de2770e9f508234207
+      latest_success_status: skipped_no_items
+      latest_success_stdout_ref: attachment://01a0af45-40e8-776e-945e-d2fbce19a4ff
+      latest_success_stderr_ref: attachment://01a0af45-5b83-799b-b3a6-8637f2842ed3
+      latest_success_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      latest_success_stderr_sha256: 14810bed6bac90e5c0aca23411147ebbe5f1b1c3cb1b1ff6c4e679052700e7c8
+      latest_success_exit_code: 0
+      latest_failure_argv_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181#failure.argv
+      latest_failure_stdout_ref: attachment://01a0af45-79e5-7d71-9c26-e2bde66e881d
+      latest_failure_stderr_ref: attachment://01a0af45-9a19-7baa-bb30-07431786977e
+      latest_failure_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      latest_failure_stderr_sha256: 065e7e79e482f30b83be02bc1e0101fe45dbed154f3c938cc062155c8e892c49
+      latest_failure_exit_code: 1
+      latest_failure_json_status: not_generated
+      latest_resolved_range: a71afbae64325753d21e781f3959f9ecb59dd9c0..a71afbae64325753d21e781f3959f9ecb59dd9c0
+      latest_review_selection: none
+      latest_observation: success_command_valid_but_review_skipped_due_base_equals_head
     result: blocked
-    reason: 已核验受控 invalid-ref 失败的 meta/stdout/stderr，exit_code=1 且 CLI 明确未生成 failure JSON；该原始失败证据已绑定。新增统一脚本运行因 `$Args` 与 PowerShell 自动变量冲突，实际未传 review 参数，仅输出 top-level help，不能作为 Review 证据；G01 仍缺有效成功 Review 的完整 argv/输出及批准 Runner
+    reason: 最新脚本已正确传入 argv，但 success 使用 main..HEAD 且两者均为 a71afbae，OCR 正确返回 skipped/no items（exit_code=0）；failure 的 invalid ref 返回 exit_code=1 且无 JSON。最新附件已绑定，G01 仍需选择有实际差异的固定 base/head 执行成功 Review，并补批准 Runner/发行物信息
 
   - gate_id: G02
     name: scan_scope_decision
