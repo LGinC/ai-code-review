@@ -116,14 +116,18 @@ entries:
       script_meta_sha256: 500e6fe15f2b36beea9712adf914557a36d9b9465808cf28eadde7820a02c373
       script_evidence_ref: issue://VTR-7/comment/01a0af2e-f5f6-7a00-8b5a-647caed7a8cc
       script_status: invalid_invocation_top_level_help
+      script_success_argv: []
+      script_failure_argv: []
       script_success_exit_code: 0
       script_failure_exit_code: 0
       script_success_json_status: not_generated
       script_failure_json_status: not_generated
-      script_success_stdout_sha256: 439c9fe61204b7704852e679fb6a02137a35239f458c40ae9051dfc0244f8c6c
-      script_failure_stdout_sha256: 439c9fe61204b7704852e679fb6a02137a35239f458c40ae9051dfc0244f8c6c
-      script_success_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      script_failure_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      script_success_stdout_ref: attachment://01a0af2e-68b2-7de3-8de8-b422b7d887da
+      script_success_stderr_ref: attachment://01a0af2e-7e6f-73d4-a019-d0d5a73645e4
+      script_failure_stdout_ref: attachment://01a0af2e-9451-7dba-b424-26ddb136d511
+      script_failure_stderr_ref: attachment://01a0af2e-bb2f-745d-b636-0f78518d283f
+      script_stdout_sha256: 439c9fe61204b7704852e679fb6a02137a35239f458c40ae9051dfc0244f8c6c
+      script_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       script_argv_status: empty_due_to_automatic_Args_collision
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
     result: blocked
