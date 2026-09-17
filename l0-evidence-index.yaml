@@ -59,9 +59,15 @@ entries:
       runner_image_digest: null
       runner_environment: local-controlled
       binary_sha256: null
+      native_executable_status: unavailable_in_npm_install
       ocr_release_reported: open-code-review v1.12.4
       ocr_build_ref: f1101fd7f
       ocr_built_at_utc: 2026-09-16T09:58:39Z
+      launcher_kind: npm_javascript
+      launcher_path: user_reported_local_npm_path
+      launcher_package: '@alibaba-group/open-code-review/bin/ocr.js'
+      launcher_sha256: 7668ea8933d987357da1e1815bd9bc32739a8ed57b53a033df47a3164d13e502
+      launcher_evidence_ref: issue://VTR-7/comment/01a0aecd-0738-7948-9016-36d6dde486be
       rules_hash: ddb40005eb732cb8b37d8d3dc1acb82f3aa51fded408c899a092c10349c369c4
       model_config_hash: 06daaa2dfdc0fbb1e514333ee8bf6b18fdf9c4d3b5e7775b904f475df94ec1c4
       execution_identity: user_reported_local_environment
@@ -100,7 +106,7 @@ entries:
       session_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
       review_json_sha256: 5b677cae03a3328981a8c639c79db2e3684330a85b1f9441c9cf7b871c4c122c
     result: blocked
-    reason: 已收到 OCR 版本/构建信息、base=head、local-controlled 和 exit_code=0；失败 JSON 未提供，且缺二进制 SHA256、规则/模型实际加载证明、完整 argv、stdout/stderr hash，不能标记通过
+    reason: 已收到 npm JS launcher 路径、包名和 SHA256；当前安装无原生 exe，仍缺批准 Runner 发行物/镜像、独立失败 JSON、完整 argv、stdout/stderr hash，不能标记通过
 
   - gate_id: G02
     name: scan_scope_decision
