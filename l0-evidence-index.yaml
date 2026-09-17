@@ -51,16 +51,22 @@ entries:
       principal_ref: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
     recorded_at_utc: 2026-09-16T07:59:36Z
     inputs:
-      source_commit: null
+      source_commit: a71afbae64325753d21e781f3959f9ecb59dd9c0
       sample_repository: workspace_controlled_attachment
       sample_base_sha: a71afbae64325753d21e781f3959f9ecb59dd9c0
-      sample_head_sha: null
+      sample_head_sha: a71afbae64325753d21e781f3959f9ecb59dd9c0
       approved_ocr_release: null
       runner_image_digest: null
+      runner_environment: local-controlled
+      binary_sha256: null
+      ocr_release_reported: open-code-review v1.12.4
+      ocr_build_ref: f1101fd7f
+      ocr_built_at_utc: 2026-09-16T09:58:39Z
       rules_hash: ddb40005eb732cb8b37d8d3dc1acb82f3aa51fded408c899a092c10349c369c4
       model_config_hash: 06daaa2dfdc0fbb1e514333ee8bf6b18fdf9c4d3b5e7775b904f475df94ec1c4
-      execution_identity: null
-      outbound_scope: null
+      execution_identity: user_reported_local_environment
+      metadata_evidence_ref: issue://VTR-7/comment/01a0aec7-7e0b-7d90-a72f-3409b88b2824
+      outbound_scope: not_reported
       repository_identity_sha256: 16a967faed55548a17134f6293e3881de65fb30aa685efb4893bacc9858935bf
       source_artifact_sha256: 0e80bb09cf8d67c22ebe2c7a65778b504a78af977d8b16b1abae727561e8d2f4
       manifest_run_id: f314bdf9-14af-4bfa-8de7-2b2dfd5826cc
@@ -85,16 +91,16 @@ entries:
       raw_log_storage: unavailable
     outputs:
       success_evidence_ref: attachment://01a0aeb5-593a-7dcc-a72f-32cf7d8f4410#completed
-      failure_evidence_ref: attachment://01a0aeb5-593a-7dcc-a72f-32cf7d8f4410#failed
+      failure_evidence_ref: null
       stdout_sha256: null
       stderr_sha256: null
-      exit_code: null
+      exit_code: 0
       parsed_schema_version: ocr.run-manifest/v1
       session_ref: bb117137-d6bc-4bc6-aaff-50e26eb64daa
       session_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
       review_json_sha256: 5b677cae03a3328981a8c639c79db2e3684330a85b1f9441c9cf7b871c4c122c
     result: blocked
-    reason: 已收到受控 Review JSON；manifest 显示 partial、11 项中 4 项失败且存在超时，仍缺 approved release/Runner digest、sample head、执行范围、完整 argv 与可复核成功/失败原件 hash，不能标记通过
+    reason: 已收到 OCR 版本/构建信息、base=head、local-controlled 和 exit_code=0；失败 JSON 未提供，且缺二进制 SHA256、规则/模型实际加载证明、完整 argv、stdout/stderr hash，不能标记通过
 
   - gate_id: G02
     name: scan_scope_decision
