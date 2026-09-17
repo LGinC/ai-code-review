@@ -112,8 +112,22 @@ entries:
       failure_stderr_sha256: 065e7e79e482f30b83be02bc1e0101fe45dbed154f3c938cc062155c8e892c49
       failure_json_status: not_generated
       failure_exit_code: 1
+      script_meta_ref: attachment://01a0af2e-3c42-709c-970f-3c1db632c05c
+      script_meta_sha256: 500e6fe15f2b36beea9712adf914557a36d9b9465808cf28eadde7820a02c373
+      script_evidence_ref: issue://VTR-7/comment/01a0af2e-f5f6-7a00-8b5a-647caed7a8cc
+      script_status: invalid_invocation_top_level_help
+      script_success_exit_code: 0
+      script_failure_exit_code: 0
+      script_success_json_status: not_generated
+      script_failure_json_status: not_generated
+      script_success_stdout_sha256: 439c9fe61204b7704852e679fb6a02137a35239f458c40ae9051dfc0244f8c6c
+      script_failure_stdout_sha256: 439c9fe61204b7704852e679fb6a02137a35239f458c40ae9051dfc0244f8c6c
+      script_success_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      script_failure_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      script_argv_status: empty_due_to_automatic_Args_collision
+      script_observation: both_invocations_ran_top_level_ocr_help_not_review
     result: blocked
-    reason: 已核验受控 invalid-ref 失败的 meta/stdout/stderr，exit_code=1 且 CLI 明确未生成 failure JSON；该原始失败证据已绑定，但 G01 仍缺批准发行物/Runner digest、Review 成功样本的完整 argv 与 stdout/stderr hash，不能标记通过
+    reason: 已核验受控 invalid-ref 失败的 meta/stdout/stderr，exit_code=1 且 CLI 明确未生成 failure JSON；该原始失败证据已绑定。新增统一脚本运行因 `$Args` 与 PowerShell 自动变量冲突，实际未传 review 参数，仅输出 top-level help，不能作为 Review 证据；G01 仍缺有效成功 Review 的完整 argv/输出及批准 Runner
 
   - gate_id: G02
     name: scan_scope_decision
