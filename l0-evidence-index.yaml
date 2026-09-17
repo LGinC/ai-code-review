@@ -97,7 +97,7 @@ entries:
       raw_log_storage: unavailable
     outputs:
       success_evidence_ref: attachment://01a0aeb5-593a-7dcc-a72f-32cf7d8f4410#completed
-      failure_evidence_ref: null
+      failure_evidence_ref: attachment://01a0af13-f086-706e-8f53-79d271fb1412
       stdout_sha256: null
       stderr_sha256: null
       exit_code: 0
@@ -105,8 +105,15 @@ entries:
       session_ref: bb117137-d6bc-4bc6-aaff-50e26eb64daa
       session_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
       review_json_sha256: 5b677cae03a3328981a8c639c79db2e3684330a85b1f9441c9cf7b871c4c122c
+      failure_meta_ref: attachment://01a0af13-f086-706e-8f53-79d271fb1412
+      failure_stdout_ref: attachment://01a0af14-352f-7318-9cc8-dec3fd423689
+      failure_stderr_ref: attachment://01a0af14-09fb-7515-978d-2d8bba581523
+      failure_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      failure_stderr_sha256: 065e7e79e482f30b83be02bc1e0101fe45dbed154f3c938cc062155c8e892c49
+      failure_json_status: not_generated
+      failure_exit_code: 1
     result: blocked
-    reason: 已收到 npm JS launcher 路径、包名和 SHA256；当前安装无原生 exe，仍缺批准 Runner 发行物/镜像、独立失败 JSON、完整 argv、stdout/stderr hash，不能标记通过
+    reason: 已核验受控 invalid-ref 失败的 meta/stdout/stderr，exit_code=1 且 CLI 明确未生成 failure JSON；该原始失败证据已绑定，但 G01 仍缺批准发行物/Runner digest、Review 成功样本的完整 argv 与 stdout/stderr hash，不能标记通过
 
   - gate_id: G02
     name: scan_scope_decision
