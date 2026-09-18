@@ -1,4 +1,4 @@
-# L0/L1 技术实施方案（VTR-6，设计交付版 v1.0）
+# L0/L1 技术实施方案（VTR-9，门禁复核版 v1.1）
 
 > 面向实施代理：由队长按任务卡逐项安排执行与复核；本阶段不启动开发，不创建后续子任务。技能建议的执行子技能不构成本阶段启动开发的授权。
 
@@ -10,7 +10,7 @@
 
 **唯一设计：** ai-devops-platform-design-v1.7.md；HEAD=f5a815bf08d356a6b64bdf2a2fbe0161d28dda2e；文件 SHA256=f7b8225ad26a5d390b06380fd627e3b292fd609e3c25539b5b62ba75628cbb85。核查日期 2026-09-16。
 
-**状态：** Stage 1技术设计交付；Q1=已有资源、Q2=不启用/声明RLS、Q3=管理入口健康探测均已确认。具体接入资料、具名签署和真实验证结果属于第2节列明的L0执行门禁，由已承接协调的队长落实；未取得前不得通过L0或开始L1开发。本次只交付设计，全部L0/PG运行门禁均未执行。沿用原文件名以保持引用稳定，正文版本为v1.0。
+**状态：** 2026-09-18 Stage 4 / NOW-04 L0 文档复核，基线 1c20a95a2bacb32bfe1d8b1fdf6383dbe570c93d。G01/G02 已通过；G03/G04 尚待配置确认、授权与阈值闭合，L0 暂不退出。L1 内核及 L2 产品验收均 not_run，不要求未开发的页面/BFF/callback 提供日志。原 v1.0 批准保留；本次修订/阈值提案不继承旧批准，不调整已签 scope 字节。
 
 ## 1. 固定约束与依据
 
@@ -18,7 +18,7 @@
 |---|---|
 | 当前仅 L0+L1；L2 产品链路、前端和真实 Review 发布排除 | VTR-5 最终 PRD 评论 01a0a858-2a84-7566-a68c-b032723457ff；用户 Q6 评论 01a0a858-c88c-71ac-baa4-62535a8be4ec |
 | Scan=DEFERRED；不装配 scan.schedule/run/report/auto_issues；进入 L3 冻结范围时复评 | 用户 Q2；主设计:1262 |
-| 现有企业 OIDC + 飞书自定义机器人，具体实例不由代理代选 | 用户 Q3/Q4；主设计:6848 |
+| 现有企业 OIDC + 已有飞书应用机器人；仅冻结未来接入，不安装 L2 模块 | VTR-4 用户评论 01a0b485-f8f6-7343-a426-aead85a2c554 选择应用机器人；历史 scope 候选保留，不转绑旧签署 |
 | Q5=1 允许技术设计/L0 采集事实，缺失仍是门禁；不是签署授权 | 评论 01a0a856-c09b-794a-92f7-216d64ebbbde |
 | 一个状态所有者、所有外部业务写入走 Operation | 主设计:179、:3152 |
 | 只安装 core；不提前建 review/notification/SSO 扩展、repair、scan、Intake、Feed | 主设计:4188 |
@@ -33,7 +33,9 @@
 
 ## 2. 已采集事实与 L0 缺口
 
-### 2.1 已核验事实
+### 2.1 历史采集事实（VTR-6，非当前缺口）
+
+以下只保留 2026-09-16 采集轨迹；后续状态以 2.2 与 l0-evidence-index.yaml 为准，不据历史缺口重开已通过门禁。
 
 | 来源 | 实际值与边界 |
 |---|---|
@@ -48,30 +50,62 @@
 | 设计:5615、:5872 | issuer、redirect_uri、Secret/Profile、飞书 destination 均明确是示例；不能从 .example 或示例 ready 字段推出已部署 |
 | frontend-build-L2-registry.yaml:21、:38 | 前端签署字段为空，只能证明 L2 尚未冻结，不能充当 G02/G04 签署 |
 
-实际源码来源完整 commit、候选 Runner 平台及 digest 尚未固定。npm launcher 含更新检查逻辑，后续探针调用批准的原生二进制或不可变镜像，避免 launcher 变更扰动版本。不得使用当前文档仓 HEAD 自动充当 OCR 样本提交。
+上述历史候选不是获准组合；G01 已绑定 v1.12.5、exe hash 和 local-controlled Runner。不得回退至 v1.12.1，也不得重索镜像或不存在的失败 JSON。
 
 ### 2.2 G01～G04 退出记录
 
-| 门禁 | 必须收集/冻结 | 当前事实与缺口 | 职责与阻断 |
+| 门禁 | 当前事实 | L0 退出条件 / 实际缺口 | 验收阶段 |
 |---|---|---|---|
-| G01 Review | release/source commit、binary hash、Runner digest、固定样本仓与 base/head SHA、规则/模型/配置 hash、执行身份/出站范围、argv、stdout/stderr/exit code、结构化成功与失败原件、解析版本、探针预算 | 只有本机版本/hash/help；批准发行物、镜像、样本、运行配置、负责人及真实结果未找到 | OCR 探针执行人具名缺失；阻断 NOW-02 退出和全部 L0 完成 |
-| G02 Scan | decision_owner、technical_owner、signed_at、scope_manifest_revision、reason、excluded_capabilities、revisit_trigger | 用户选定 DEFERRED；未找到绑定具体 scope revision 的具名产品/技术双签记录 | 产品/技术签署人具名缺失；不能把 Q2 选择或代理署名当完整签署 |
-| G03 外部范围 | 实际 IdP Provider/版本或托管服务版本策略、issuer/Discovery、精确 callback、客户端类型、claims/准入规则、停用语义、测试环境与账户负责人；飞书模式、目标引用、安全设置、发送/查证/验证角色与能力证据 | 已选企业 OIDC、飞书自定义机器人；真实值与证据未找到 | OIDC 环境负责人、飞书管理员、查证身份责任人具名缺失；阻断 NOW-03 退出 |
-| G04 工程纪律 | 单 scope revision、目录/表 owner、注册清单、等待评审模板、PG-G 计划、真实 PG/角色/版本、阈值负责人、各门禁退出条件、签署引用 | 本稿给出执行规则与测试计划；批准清单、具名 owner、PG 环境和阈值未找到 | 后端/DevOps/测试及 PG 阈值 owner 需队长落实；阻断 NOW-01/04 冻结及 L1 开发 |
+| G01：pass | v1.12.5 / exe SHA256 a9c29355f4b540b809e0b032a3299b7acfc9fb7fbfdf84ef5673c8457e518f9b / local-controlled；成功两文件、失败 exit=1 无 JSON | 复用 VTR-7 的 01a0b3d3-fe91-7ce0-b6e2-484880c4b11d、01a0b3d4-e9e4-7714-b5dc-302d22e02c8c 批准及索引原件；无新增要求 | L0 已通过；真实 Review 产品链路为 L2 |
+| G02：pass / DEFERRED | L1-core-now01-r1 / SHA256 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6；产品/技术同一具名负责人已签 | 复用 01a0a98a-8f89-79da-84b5-267faae892ac；不重签、不运行 SCAN-P | L3 冻结时复评；不安装四项 scan 能力 |
+| G03：blocked | Discovery/JWKS、配置存在性和 roles=admin 已记录；应用机器人已选定 | 2.4 管理员注册确认/版本策略、tenant 映射；2.5 机器人凭据角色、授权与能力合同 | L0 冻结外部配置；L1 测试 Provider 验内核；L2 实测登录/撤权/发送/查询 |
+| G04：blocked | scope/具名 owner 已登记；PG 150013、ai-devops 非 superuser/无 BYPASSRLS、read committed 已报告 | 批准 6.1 隔离测试环境/角色边界、连接预算/阈值和 NOW-04 文档清单；不要求先建正式表 | NOW-04 L1 工程门禁、NOW-05 双连接/PG-G01～12、NOW-06 公平报告均 not_run |
 
 G02 签署原因应由签署人确认：本次仅 L0/L1，扫描不在交付范围；候选尚未完成扫描实验，不称不支持。进入 L3 时继续排除则更新签署，选择自动扫描才运行 SCAN-P01～06。DEFERRED 不授予 scan.report，也不要求本次运行 SCAN-P。
 
-G03 飞书不具备 Lookup/回执时允许如实冻结 unsupported/ack_only；不要求伪造不存在的“只读机器人凭据”。实际能力没有查证接口时记录人工查证责任与证据渠道，unknown 不能自动重发。发送凭据与能够提供的只读查证角色分开；任何秘密只存批准 Secret 管理系统，本稿和 issue 只接收非秘密引用。
+G03 可按实际权限冻结 unsupported/ack_only，不伪造只读凭据；管理员负责人工查证，证据走受控附件，unknown 不自动重发。本机临时环境变量已获 01a0b446-26dc-73ac-8ef2-ac2b99d25d3f 批准，只登记引用/变量名，不读写值；不把安装 Vault/KMS 当本机 L0 门槛。共享/生产另批。
 
 ### 2.3 证据交付约定
 
 沿用根目录登记模式：release-scope.yaml、l0-evidence-index.yaml 为后续唯一 scope 与证据索引，具体原件以受控附件/制品引用交付。索引逐条存 gate_id、scope revision/hash、执行人、UTC 时间、输入/输出 hash、命令版本、结果（pass/fail/not_run/blocked）、证据引用和审核人；签署绑定准确 revision/hash。敏感 stdout 原件限制访问，公开摘要脱敏，不能把脱敏空文件当原始执行成功。
 
-阈值登记必须有环境/数据规模、并发槽/连接预算、P95 与最大等待、恢复扫描上界、负责人、批准时间及原始报告引用。G04 冻结测试输入/负责人/判定方法；进入公平性验收前锁定数值，不能看完结果后移动阈值。初始实验建议值见第 6 节，尚未批准。
+现有签署 hash 按 Git blob 原字节核验。当前 Windows core.autocrlf=true，checkout 为 CRLF；不能用 checkout 的 Get-FileHash 冒充已签 blob hash，也不能为对齐 hash 改写 scope 文件。本次 scope 与主设计未修改。
+
+G04 在 L0 冻结环境/数据规模/连接预算/阈值/负责人/判定方法；报告引用先为 null，NOW-05/06 运行后登记。报告缺失只阻断所属 L1 验收，不阻断产生报告所需的开发。6.1 提案未批准前不运行数据库实验，不能看完结果再改阈值过关。
+
+### 2.4 OIDC：配置证据不等于端到端成功
+
+主设计:6848 的 G03 是外部范围冻结。2026-09-18 只读复核实际 Discovery 与 VTR-8 一致：code、RS256、S256 已声明，scopes 未列 roles/ai-devops，claims 未列 roles。OIDC Discovery 1.0 §3 允许 scope 不全部公布、claims 列表不穷尽；未声明既不证明不支持，也不证明签发成功。规范出处：`https://openid.net/specs/openid-connect-discovery-1_0.html` §3。
+
+| 项目 | L0 可接受证据 / 当前状态 | 后续运行断言 |
+|---|---|---|
+| 已有事实 | 复用 01a0b42d-7b85-7523-8df6-3dec9481927d 的 client/scopes/claims、01a0b461-8be5-73d4-86f8-042dfd79bbc0 的 roles=admin、01a0b468-6223-72ee-97ec-b169ba54ff3a 的变量存在性、01a0b46d-f1e8-7d68-ae7c-fc096682bb05 的 issuer/JWKS 检查 | 不重复执行用户已报告检查；不把应用端配置当作 IdP 已签发角色 |
+| 客户端注册 | 管理员脱敏导出/截图或逐项明确回复：索引中的 client、confidential code、精确 callback、S256、授权 scope 含 openid；roles/ai-devops 为允许的自定义 scope，roles 的签发位置/类型/映射 | L2 实测授权码交换、state/nonce 单次消费、PKCE、签名/issuer/aud/exp/sub；ID Token aud 校验 client_id，不把同名 scope 当 aud 证据 |
+| 准入和租户 | admin 规则已确认；待确认受控用户→tenant/membership 来源、停用/撤权来源、Provider 版本或托管变更通知策略 | L1 测试身份不得进生产 binary；L2 当前对象鉴权，不从 email/domain/header 推断租户；角色缺失/类型错误/无映射拒绝 |
+| 凭据与会话 | OIDC_CLIENT_SECRET 存在性已报告，可作为本机受控环境引用；只登记变量名/注入负责人；保持本地登出立即失效及敏感操作前重验权限 | L2 会话、停用/撤权和脱敏日志验收 not_run；不满足安全合同则停，不放宽准入 |
+
+上述管理员确认只证明配置，不证明运行成功；真实正负向产品登录证据属于 L2，不作为 L0 退出前日志要求。
+
+### 2.5 飞书：应用机器人路径，未授权发送
+
+用户已在 VTR-4 / 01a0b485-f8f6-7343-a426-aead85a2c554 选 2，不再提问模式。只更新未来接入契约；release-scope.yaml 的历史 custom webhook 候选保留原字节，不覆盖旧签署、不启用 notification。L2 启用前在同一 scope 文件更版、绑定新 hash 签署；若要 L1 安装该模块则另行批准范围变更。
+
+| 契约项 | 边界 / 最小输入 |
+|---|---|
+| 账户与目标 | 保留已有 appId/chat_id 受控引用；管理员确认归属租户、自建/商店应用、机器人启用/入群/可见范围及应用发布/权限版本。子类型未确认，不擅选取 token 接口 |
+| 凭据 | 提供受控引用/本机变量名及注入负责人，不提供值；服务端 token 缓存/刷新服从实际失效时间；标识不等于凭据 |
+| 发送（L2 外部适配，非新增平台 API） | POST /open-apis/im/v1/messages?receive_id_type=chat_id，Bearer 应用身份 token；receive_id=受控目标、msg_type=text、content=编码后的 text 对象；若用 uuid，先核验去重窗口，固定原效果键 |
+| 响应与模型 | HTTP 成功且 code=0、有效 message_id 才记录 accepted；Receipt 含 tenant/integration、operation/key/hash、目标引用、message_id、证据时间/hash；不等于已读或业务完成 |
+| 授权 | 最小发送权限 im:message:send_as_bot 与目标群范围由管理员证明；未来探针需批准目标/内容/数量/时间窗，当前不发消息、不索运行日志 |
+| 查证 | GET /open-apis/im/v1/messages/{message_id} 需要机器人在群且具备 im:message:readonly 等已获准权限；接口存在不证明本应用获权，只是已知 ID 的 Inspect 候选，不是未知发送的按键 Lookup |
+| 能力下限 | 自动 Lookup=unsupported（未获实际按键查证证据），完成语义上限 ack_only，回执/查询实测 not_run；管理员确认人工查证责任与受控附件渠道后可冻结此下限，不宣称 Provider 永不支持 |
+| unknown/权限隔离 | 超时/断连/5xx 保持 unknown，不盲重发；无读权则人工查证，不借恢复角色发送；404/空查询不算未发生，不能伪称已存在独立只读 token |
+
+官方依据（2026-09-18）：`https://open.feishu.cn/document/server-docs/im-v1/message/create`、`https://open.feishu.cn/document/server-docs/im-v1/message/get`。实际应用授权、幂等窗口和限额尚未验证。
 
 ## 3. 模块、文件与表归属
 
-下表是实施职责归属，具名负责人与审核人由 NOW-01 登记。一个文件只有一个修改负责人；架构师仅审阅文档，后续产品代码由后端负责人实现。
+下表沿用 release-scope.yaml:file_owners/table_owners 的既有具名职责，不另建 owner 注册。VTR-9 仅独占本方案与 l0-evidence-index.yaml，结束后交还索引原 owner；scope 只读。架构师不写业务/测试代码。
 
 | 文件范围（后续创建） | 唯一职责/输出 | 依赖与表写权 |
 |---|---|---|
@@ -84,7 +118,7 @@ G03 飞书不具备 Lookup/回执时允许如实冻结 unsupported/ack_only；�
 | internal/adapters/storage/gormpostgres/{unitofwork.go,identity/,workflow/,externalop/,outbox/} | 唯一 SQL-first Repository；参数化 SQL 放所属 sql/；UoW 绑定同连接 | 只作为所属 owner 的持久化实现；无跨域任意 Save |
 | internal/adapters/queue/postgres/{queue,relay}.go | Outbox 路由与逐订阅者 delivery、ACK/重投 | outbox_events 的路由字段、outbox_deliveries、consumer_receipts；不判定业务完成 |
 | internal/adapters/schema/{registry,validator}.go | 内嵌静态 Schema、严格解码/hash/quarantine | 不允许网络 $ref 或动态加载执行逻辑 |
-| internal/adapters/system/{clock,secrets}.go；storage/gormpostgres 下 artifact/audit 持久化 | 受信时间、按身份/目标取密钥引用、最小制品/审计 | artifacts/audit_events；未提供真实 Secret 服务则外部能力不可启用 |
+| internal/adapters/system/{clock,secrets}.go；storage/gormpostgres 下 artifact/audit 持久化 | 受信时间、按身份/目标取密钥引用、最小制品/审计 | artifacts/audit_events；本机可用已批准临时环境变量；外部能力仍需具体授权，共享/生产另批 |
 | architecture/{modules,exceptions}.yaml、handler-review.md；.golangci.yml | 唯一目录/表 owner、禁边、到期例外、等待事实模板 | 后端边界实施人修改，架构角色复核 |
 | tools/{archcheck,check-architecture-fixtures}/main.go | depgraph/AST/目录/传递边界及正反 fixture 校验 | 无业务 Repository；读取真实 module prefix |
 | db/migrations/core/{manifest.yaml,0001_identity.sql,0002_workflow_outbox.sql,0003_externalop.sql} | 有序 SQL/checksum/约束/索引，scope 只选择 core | 由后端数据库负责人独占；DevOps 不修改同一迁移 |
@@ -185,10 +219,10 @@ Gin server生命周期及bootstrap必需DB/Registry校验仍通过进程退出�
 
 | 注册项 | L1 允许内容 | 禁止/验证 |
 |---|---|---|
-| Handler | externalop.recover_expired_sending.v1；prepared/unknown 领取与最小本地引用恢复；测试用固定有界步骤 | 未知 handler/version 启动失败；没有周期 goroutine/sleep/业务私有 polling |
-| Operation | 内核支持已注册 type 的执行/查证；生产只装 scope 已验证项；L1 不启用 scm.review.summary/message.send/runner.submit 的真实适配 | 用同一机械 Harness 的 SCM/Runner/message 测试参数验证公平性；测试类型不得进正式 Registry |
+| Handler | 正式固定项 externalop.recover_expired_sending.v1；prepared/unknown 由同一 Coordinator 的 action 领取，不另造 Handler；最小引用恢复通过既有 recovery 入口；有界测试步骤仅测试 binary | 未知 handler/version 启动失败；没有业务私有 polling；正式清单扩项需复核 |
+| Operation | L1 正式 Provider Operation 类型清单为空；内核接受编译注册描述符，测试 binary 分别注入 SCM/Runner/message 夹具；不启用 scm.review.summary/message.send/runner.submit | 同一机械 Harness 验公平性；测试类型不得进正式 Registry；空外部清单不等于 core Registry 缺失 |
 | Operation descriptor | type、owner kind、request/receipt/observation Schema及hash、确认 profile、Execute/Lookup/Inspect、原生幂等期限/一致性/迟到证据、退避/预算、write/reconcile_read角色、分区/Watch策略 | descriptor 缺字段/未验收 Provider不启用；不接受运行时 URL/命令/任意 JSON payload |
-| Schema | external_operation.observed.v1、本地 run.reference.updated.v1、固定工作提示 envelope；文件由受审注册表引用并内嵌 | type/version/hash 一一匹配；未知/冲突版本隔离，不运行远程 $ref |
+| Schema | external_operation.observed.v1、run.reference.updated.v1；工作提示复用同一 typed envelope，仅携带已持久化对象引用，不增加业务事件；Schema 文件由同一编译注册表引用/内嵌 | type/version/hash 一一匹配，实际 hash 在 NOW-04 L1 创建 Schema 后锁定；未知/冲突版本隔离，不运行远程 $ref |
 | Watch | 已知 Job+purpose+tenant/integration/授权范围/generation；active/paused/completed | 未知提交不得增加 Watch；同目的同范围共享，不同权限不能合并 |
 | 固定定义 | L1 测试 binary 内固定定义与短检查点；真实 review.pipeline.v1 留 NOW-07 | 无 YAML 解析、Wait 表、用户脚本/远程 Go 插件；原 definition/hash 固定至终态 |
 
@@ -221,6 +255,24 @@ HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复�
 
 恢复路径：启动核验 core 安装与注册 → 不接新写直至DB可用 → 扫描未路由 Outbox、prepared/unknown/expired sending、本地等待引用 → 保留原键/版本/期限 → 只在当前权限与证据允许时执行。历史备份恢复先禁外部写，核对不确定效果；不能清空账本重放。停机停止领取，完成或取消有界本地调用，保留未确认 sending 供下次恢复；不删除执行历史与制品。
 
+### 6.1 G04 最小实验提案（pg-local-v1，待具名负责人批准）
+
+负责人沿用 member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7；以下是本地固定负载正确性/抗饥饿门槛，不是生产容量承诺。批准前不连接数据库、不改角色/配置、不建表。
+
+| 项目 | 建议固定值 / 判断 | 依据 |
+|---|---|---|
+| 环境 | 复用已报告 PG server_version_num=150013、read committed；负责人指定无业务数据的独立测试库及维护窗口，登记 CPU/RAM/连接余量/受控 DSN 引用 | 已有实例不等于可破坏测试库；现有 public 库禁止默认清理 |
+| 最小权限 | 应用角色非 superuser、无 BYPASSRLS、非测试表 owner、无继承 owner/DDL 权限；迁移身份仅获指定测试库建表/索引/授权权限；测试清理由所有者明确批准具体对象 | 现有 ai-devops 前两项已报告，表所有权/权限边界留正式迁移后核验；不强行新建角色 |
+| 连接预算 | 总峰值 12：API 2，Worker 6（数据路径4、恢复控制2），双连接验证2，迁移1，诊断1；不够则执行前重批，不修改服务器 max_connections | 有独立竞争连接与恢复保留容量；网络等待不占事务 |
+| 超时 | 普通控制事务 lock_timeout=1s、statement_timeout=3s、事务总预算5s；迁移单语句30s；故障用例预期超时单列，不误计性能失败 | 有界失败；SQLSTATE 分类并整事务同键重试，最多3次/总预算5s |
+| 调度 | 沿用 execute=4/read=2、SCM/Runner weight4/max2/reserved1、message weight1/max1；poll=1s+jitter[0,200ms]，claim batch20，recovery batch10 | 保留已有设计初值，不引入第二调度器 |
+| 固定负载 | 2 tenant，每个 tenant 的 SCM/Runner 各最多1个 ready 等待任务，完成后补齐；失败消息10,000条持续补齐，测试 Provider 固定429；慢返回2s，调用预算3s，sending lease10s；预热60s、测量600s | 有界对照负载能复现通知风暴而不向真实 Provider 写入；不可拿无限积压要求固定等待 |
+| 公平与恢复 | 有界 SCM/Runner 就绪队列及每 tenant 最多1项查证的等待 P95≤5s、max≤15s；消息分区持续可领取时，每 tenant 相邻领取间隔 max≤15s，不要求10,000积压在15s清空；过期 sending 到持久化 unknown 延迟 max≤5s；控制连接获取 max≤1s | 两租户均须进展；将有界延迟与积压吞吐分开，不用总体平均掩盖饥饿 |
+| 正确性 | PG-G01～12 全部适用分支真实通过；0越租户、0重复外部效果、0静默丢失；RLS分支按未启用列非适用，PG-G08不能跳过 | 安全/一致性阈值不以性能妥协 |
+| 判定 | P95 用排序后 ceil(0.95*N) 项；有界队列按首次 due_at 到领取统计，重试单记新 due_at，不能抹原等待，未完成年龄计入 max；消息记每次可领取区间首尾和相邻领取间隔；无进展失败；每分区 N≥100，不足 not_run | 不删尾样本/只报成功请求；归档时序、槽/连接占用、资源规格；消息积压总等待另报但不套有界队列阈值 |
+
+NOW-05 实测正式迁移/角色/两独立 backend PID、PG-G01～12 及最小恢复；NOW-06 用同一参数再测一体化公平负载。连接失败、样本不足、阈值超限均不能 pass。阈值调整须事前新 revision+负责人批准，保留旧失败报告后重跑；禁止事后改值过关。实际运行版本、迁移 checksum、报告引用由执行阶段填入原索引。
+
 ## 7. 逐任务实施与验收命令
 
 以下均为后续实施命令合同，不是当前已存在/已运行的工具。真实版本、DSN和秘密由执行环境提供，不在命令写死。测试名称同时固定为实施输出，执行前必须校验 -list 非空以及预期用例数量；仅 exit=0 或 “no tests to run” 不能算通过。架构全图静态门禁必须全量，业务测试默认仅新增/修改目标；本次没有运行任何产品测试。
@@ -242,7 +294,9 @@ HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复�
     Get-FileHash release-scope.yaml -Algorithm SHA256
     Get-Content l0-evidence-index.yaml -Encoding UTF8
 
-### NOW-02：Review 探针与 Scan 签署（L0）
+### NOW-02：Review 探针与 Scan 签署（L0，已完成）
+
+本卡步骤保留作历史执行说明，不再执行。当前通过证据及 local-controlled 批准见 2.2；镜像/失败 JSON 不是追加要求。
 
 **文件：** 只更新 l0-evidence-index.yaml 的 G01/G02 引用；原始输出放受控制品。**负责人：** OCR 探针执行人、产品/技术签署人。**依赖：** NOW-01。
 
@@ -270,22 +324,25 @@ HTTP 客户端按 Provider/Integration 的 base URL/TLS/代理/凭据边界复�
 **输入：** 实际实例/客户端/回调/测试身份/目标与凭据角色。**输出：** 版本绑定的兼容档案，不生成 L2 产品代码。
 
 - [ ] 确认实际 Provider/版本、受信 issuer/端点、精确 callback、PKCE S256/state/nonce 与准入规则。
-- [ ] 对已授权测试客户端核对正向回调及 state/nonce/issuer/audience/租户映射/撤权负向证据；不借通用占位绕过。
-- [ ] 核对飞书自定义机器人目标、安全设置、发送响应语义、只读查证/回执是否支持；标明 ack_only/unsupported 的真实依据。
+- [ ] 按 2.4 核对管理员注册/授权证据；正向回调及 state/nonce/issuer/audience/租户映射/撤权实测归 L2，当前记 not_run。
+- [ ] 按 2.5 已选择的应用机器人路径冻结账户/目标/授权和能力下限；不要求伪造只读凭据，不重复询问模式。
 - [ ] 发送探针仅在管理员明确批准目标与消息后执行；不在本任务擅自发消息。
 - [ ] 固化发送/查证/验证角色和Secret引用，确认不向Runner授予IdP token/SCM写权限。
 - [ ] 汇总 G03 证据，环境缺失或协议不满足安全下限时阻塞，不自行替换 IdP。
 
-验收为匹配实际 Provider 的原生命令/账号记录，必须由实际档案携带准确 argv/API 请求和脱敏响应；当前没有目标，不能编造一条可执行联调命令。通用索引核验：
+L0 验收为实际账号/管理员配置记录和明确能力边界，不要求产品运行响应；L2 才需真实请求/脱敏响应原件。通用索引核验：
     Get-Content l0-evidence-index.yaml -Encoding UTF8
     Get-FileHash release-scope.yaml -Algorithm SHA256
 
 ### NOW-04：边界、注册和等待门禁（先 L0 文档，后 L1 实现）
 
-**文件：** 第3节 architecture/tools/ports/domain/bootstrap/Gin 基线、go.mod/go.sum；tests/architecture/{boundaries,fixtures}_test.go、tests/contract/{registry,schema,health}_test.go。**负责人：** 后端边界实施人、测试负责人；架构复核。**输入：** NOW-01/G04 签署及 G01～G03 结果。**输出：** core 编译边界和实际命中的正反门禁。
+**L0 文件：** 仅本方案与 l0-evidence-index.yaml，架构师独占，release-scope.yaml 只读。**L0 输入/输出：** NOW-01/02/03 证据 → 3/5.2/5.3/6.1/8 节文档清单和具名批准；不交付编译/运行报告。
 
-- [ ] 文档冻结 modules/表 owner、允许端口、等待模板、Schema/Handler 清单与PG计划。
-- [ ] 执行 L0 退出审查：G01/G03/G04真实证据，G02有效DEFERRED；任何不完整停止，不先开发。
+**L1 文件：** 第3节 architecture/tools/ports/domain/bootstrap/Gin 基线、go.mod/go.sum；tests/architecture/{boundaries,fixtures}_test.go、tests/contract/{registry,schema,health}_test.go。**负责人：** 后端边界实施人、测试负责人；架构复核。**L1 前提/输出：** 全部 L0 退出且队长另建开发阶段 → core 编译边界和实际命中的正反门禁。
+
+- [x] 文档列明既有 modules/表 owner、允许端口、等待模板、Schema/Handler 清单与 PG 计划；文档齐备不等于获准执行。
+- [ ] 取得 2.4/2.5 配置确认与 6.1 环境/阈值/文档纪律批准；G01/G02 复用通过证据。此处不要求 L1/L2 运行报告。
+- [ ] 队长核对 G01～G04 的 L0 条件全满足后另建 L1 开发阶段，才执行下列工程步骤。
 - [ ] 建单 module，module prefix 从实际项目仓库规范确定；锁定 Go/Gin/GORM/Driver/lint 版本，禁止复制 example.com/aidevops。
 - [ ] 测试负责人建立合法与故意越界 fixture；先证明非法依赖能导致失败。
 - [ ] 后端实现 depguard+go list -deps -test -json 图/AST 及 Registry/hash 拒绝逻辑；仅白名单核心启动。
@@ -387,7 +444,9 @@ L1 最终退出需要第8节完整矩阵已有有效报告；“只跑新增/修
 
 风险结论：选定架构可按最小影响面实施，但RLS/探测合同决策已关闭，仍须补齐资源事实及实际证据/签署。无证据的“安全/性能已通过”结论不成立。架构 lint 不是运行授权保障；HA/扩容不解决 Provider 不可查证 unknown。
 
-## 10. 当前决策与资源交接（2026-09-16 修订）
+## 10. 历史决策与资源交接（2026-09-16 留档）
+
+10.1/10.2 为 VTR-6 历史交接，不作为当前缺口或重跑指令；最新裁定以 2.2、6.1、10.3 与索引为准。
 
 用户评论01a0a8fc-6d7e-7a40-a47b-292bcfb9acee确认Q2=1、Q3=1；评论01a0a901-46c7-7b5e-9758-f066966d003f确认Q1=1“已有资源”。本阶段三个选择已关闭；已有资源是用户声明，尚无具体接入入口/管理员和验证记录，不当作G01～G04通过。Stage 0产品范围全部沿用。
 
@@ -426,3 +485,15 @@ Q1=1已关闭“使用现有资源还是先准备资源”的选择。队长已�
 现阶段可交接技术方案：模块/表/端口归属、已确认探测合同、事务与unknown/迟到恢复、六类风险控制、六张任务卡和12条PG门禁矩阵。可用事实已经记录；未提供的外部事实逐项交给队长，不填通用占位、不代替任何人签署。
 
 VTR-6的done只表示本Stage技术设计交付完成，不表示release-scope签署、L0实验或L1代码已完成。队长可安排L0资源接入与证据采集；真实L0退出审查全部通过后才允许L1产品开发。若接入事实与已确认设计冲突，由队长处理新的具体决策，不能静默替换OIDC/通知通道或放宽隔离。
+
+### 10.3 VTR-9 当前交接（2026-09-18）
+
+| 已批准 / 待批准 | 当前处理 |
+|---|---|
+| 已批准 | 原 scope hash、Scan DEFERRED、G01 组合、仅管理入口健康探测、不声明 RLS、本机临时 Secret、未来通知选应用机器人；不重复索取 |
+| G03 待确认 | 用户作为管理员按 2.4 确认客户端授权/映射/版本策略；按 2.5 提供应用类型、凭据引用、目标范围和人工查证能力合同；不是先索不存在的日志 |
+| G04 待批准 | 6.1 的独立测试库/权限范围/窗口、12连接预算和 pg-local-v1 阈值；3/5.2/5.3/8 的 owner/注册/等待/PG 纪律。当前不实施数据库连接或修改 |
+| 版本登记 | PG 150013 与 OCR v1.12.5 为已报告/批准实际值；core 代码尚不存在，Go/Gin/GORM/Driver/depguard 无 go.mod 锁定版本，不伪造版本。NOW-04 L1 开始工程前由原版本 owner 锁定版本/许可证；正式迁移 checksum 与 Schema hash 随实现登记，未创建不填假值 |
+| 下一可执行任务 | 先由队长汇总上述管理员确认与批准，只改本方案/索引；若需改变已签范围先更版签署。L0 全通过后另建 NOW-04 L1 工程门禁，再 NOW-05 正式 PG、NOW-06 内核整合 |
+
+本任务当前结论为 blocked，不是“等待未开发系统日志”。VTR-9 done 仅表示门禁收口获得明确结论，不能自动声称 L0 已过或 L1 完成。所有 PG/L1/L2 实测维持 not_run，文档/YAML 校验不计运行验证。

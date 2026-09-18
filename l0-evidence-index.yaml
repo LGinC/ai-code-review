@@ -24,6 +24,11 @@ source_refs:
   implementation_plan_commit: 94473479c71964df26730bedab3e18da6174c3ca
   approved_plan_attachment: vtr-6-plan-v1.0-9447347.md
   approved_plan_attachment_id: 01a0a903-ca64-7630-bce6-ff1b1c6e0ff9
+  current_plan_revision: v1.1
+  current_plan_review_issue: VTR-9
+  current_plan_approval_status: pending_g03_g04_confirmation
+  current_plan_base_commit: 1c20a95a2bacb32bfe1d8b1fdf6383dbe570c93d
+  historical_plan_approval_does_not_approve_current_proposals: true
   project_resources_file: .multica/project/resources.json
   source_issue: VTR-7
 
@@ -34,6 +39,7 @@ recording_policy:
   sensitive_stdout: restricted_and_not_committed
   missing_evidence: never_mark_pass
   candidate_registration: prohibited_until_verified
+  signed_hash_basis: git_blob_bytes_not_windows_crlf_checkout_bytes
 secret_delivery:
   selected_option: 2
   provider_class: local_environment_variables
@@ -251,6 +257,8 @@ entries:
       oidc_openid_scope_configured_status: not_verified
       oidc_requested_scopes_not_advertised: [roles, ai-devops]
       oidc_claims: [sub, roles]
+      oidc_admin_rule_evidence_ref: issue://VTR-7/comment/01a0b461-8be5-73d4-86f8-042dfd79bbc0
+      oidc_admin_rule_status: admin_allowed_user_reported_not_proof_of_idp_issuance
       oidc_claim_contract:
         subject: sub_required
         roles: roles_required
@@ -274,7 +282,7 @@ entries:
       oidc_environment: local_controlled_test_only
       oidc_secret_delivery: local_environment_variable
       oidc_secret_status: user_reported_present
-      oidc_secret_ref: null
+      oidc_secret_ref: local_environment_variable:OIDC_CLIENT_SECRET
       oidc_secret_approval_ref: issue://VTR-7/comment/01a0b446-26dc-73ac-8ef2-ac2b99d25d3f
       oidc_configuration_facts_status: recorded_user_reported_and_discovery_verified
       oidc_environment_presence_evidence_ref: issue://VTR-7/comment/01a0b468-6223-72ee-97ec-b169ba54ff3a
@@ -287,11 +295,23 @@ entries:
       oidc_product_flow_reason: login_page_bff_and_callback_handler_are_not_implemented
       oidc_product_flow_evidence_ref: issue://VTR-7/comment/01a0b471-b597-7137-8943-75b35776e233
       oidc_provider_capability_status: partially_verified
-      oidc_provider_capability_gap: roles_and_ai-devops_scope_claim_support_not_advertised_and_requires_idp_admin_confirmation
-      feishu_mode_candidate: custom_webhook_bot
-      feishu_mode: unconfirmed_webhook_or_app_bot
-      feishu_mode_status: not_proven_by_app_id_and_chat_id_alone
-      feishu_credential_delivery: secret_manager_vault_kms_reference
+      oidc_provider_capability_gap: client_registration_scopes_claim_mapping_tenant_mapping_and_provider_version_policy_need_admin_evidence_not_product_logs
+      oidc_discovery_review:
+        reviewed_date: '2026-09-18'
+        result: consistent_with_prior_public_metadata
+        scopes_and_claims_lists_may_be_non_exhaustive: true
+        missing_advertisement_proves_neither_support_nor_non_support: true
+        basis: https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata
+        product_validation_stage: L2
+        accepted_l0_evidence: named_admin_redacted_registration_export_screenshot_or_explicit_fieldwise_confirmation
+      feishu_mode_candidate: app_bot
+      feishu_mode: app_bot
+      feishu_mode_status: selected_by_user_not_runtime_verified
+      feishu_mode_selection_ref: issue://VTR-4/comment/01a0b485-f8f6-7343-a426-aead85a2c554
+      feishu_app_subtype: not_confirmed_self_built_or_store
+      feishu_signed_snapshot_relation: historical_webhook_candidate_unchanged; record_future_choice_only; no_L1_installation_or_old_signature_rebinding
+      feishu_activation_requires: new_L2_scope_revision_hash_and_signature_before_runtime_registration
+      feishu_credential_delivery: local_environment_variable_reference_allowed_for_local_testing_only
       feishu_credential_ref: null
       feishu_admin: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       feishu_app_id_status: present_user_reported_controlled_reference_only
@@ -301,19 +321,37 @@ entries:
       feishu_webhook_endpoint_ref: null
       feishu_send_authorization_scope: not_provided
       feishu_send_authorization_status: blocked_missing_explicit_target_and_message_approval
-      feishu_response_semantics: ack_only_not_verified
-      feishu_lookup_or_receipt_capability: unsupported_not_evidenced
-      feishu_capability_basis: only_app_id_and_chat_id_were_supplied; no_endpoint_credential_or_lookup_receipt_evidence_is_available
+      feishu_response_semantics: ack_only_contract_runtime_not_run
+      feishu_lookup_or_receipt_capability: automatic_unknown_lookup_unsupported_in_proposed_contract; admin_confirmation_pending
+      feishu_capability_basis: app_bot_selected; official_known_message_id_read_API_is_not_unknown_effect_key_lookup; actual_app_permissions_not_evidenced
+      feishu_contract:
+        plan_ref: ai-devops-L0-L1-implementation-plan-v0.1.md#2.5
+        status: path_selected_remaining_admin_inputs_pending
+        send_api: POST /open-apis/im/v1/messages?receive_id_type=chat_id
+        send_permission_required: im:message:send_as_bot
+        known_message_inspect_api: GET /open-apis/im/v1/messages/{message_id}
+        read_permission_candidate: im:message:readonly
+        read_permission_status: not_verified
+        receive_id_source: controlled_chat_id_reference
+        response_required: successful_http_and_business_code_zero_and_valid_message_id
+        receipt_means: accepted_not_read_or_business_complete
+        unknown_policy: retain_unknown_no_blind_resend_manual_evidence_if_no_lookup
+        manual_evidence_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+        manual_evidence_channel: controlled_issue_attachment
+        manual_responsibility_confirmation: pending
+        l0_requires: app_subtype_bot_membership_published_permission_version_credential_reference_target_authorization_and_capability_confirmation
+        l2_requires: authorized_real_send_inspect_and_security_validation
+        runtime_result: not_run
       endpoint_storage: controlled_reference_only
       future_acceptance:
         oidc:
         - confirm_idp_registered_client_type_and_exact_redirect_uri
-        - confirm_openid_roles_and_ai-devops_scope_claim_support
+        - confirm_openid_roles_and_ai-devops_client_scope_authorization_and_roles_mapping_using_admin_configuration_evidence
         - run_product_login_callback_with_state_nonce_pkce_s256_and_sub_roles_admin_checks
         - verify_audience_issuer_session_creation_and_redacted_logs
         - verify_local_logout_and_sensitive_operation_reauthorization_after_revocation
         feishu:
-        - confirm_webhook_or_app_bot_mode_from_provider_registration
+        - confirm_app_subtype_bot_membership_and_published_permission_version_without_reasking_app_bot_choice
         - provide_controlled_credential_reference_and_explicit_target_send_approval
         - verify_signature_or_security_setting_and_http_response_semantics
         - record_lookup_or_receipt_capability_as_supported_or_unsupported
@@ -323,7 +361,7 @@ entries:
       version: registration_only
       argv: null
     result: blocked
-    reason: OIDC 非秘密配置、Discovery/JWKS 事实和本机临时 Secret 批准已分层记录；产品登录链路尚未实现，OIDC roles/ai-devops 能力及 Feishu 实际模式、凭据引用、发送授权和查证能力仍未取得，因此不执行外部副作用
+    reason: 复用已报告 OIDC/JWKS/roles=admin 事实；Discovery 未声明不判不支持。仅待管理员注册/映射/版本策略、已选择应用机器人的凭据角色/目标授权/能力合同闭合；产品登录与发送实测属 L2 not_run，不是 L0 日志缺口，不执行外部副作用
     evidence_ref: issue://VTR-7/G03-inputs-required
 
   - gate_id: G04
@@ -361,13 +399,70 @@ entries:
       role_attributes_result: user_reported
       threshold_owner: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       threshold_approval_ref: null
+      l0_document_review:
+        issue: VTR-9
+        file_owner_source: release-scope.yaml:file_owners
+        table_owner_source: release-scope.yaml:table_owners
+        temporary_document_owner: agent:168bc97d-a80d-40ff-a4dc-1820574daf72
+        temporary_exclusive_files: [ai-devops-L0-L1-implementation-plan-v0.1.md, l0-evidence-index.yaml]
+        release_scope_read_only: true
+        fixed_registry_ref: implementation_plan_section_5_2
+        production_handlers: [externalop.recover_expired_sending.v1]
+        production_provider_operations: []
+        typed_business_schemas: [external_operation.observed.v1, run.reference.updated.v1]
+        work_hint: existing_typed_envelope_with_persisted_object_reference_only
+        handler_review_template: implementation_plan_section_5_3
+        pg_test_plan: implementation_plan_section_8
+        status: documented_pending_approval_not_engineering_validation
+      version_inventory:
+        postgres: {value: '150013', status: user_reported}
+        ocr: {value: v1.12.5, status: approved_G01_only_not_L1_module}
+        core_implementation: {value: null, status: not_implemented}
+        go_gin_gorm_driver_depguard: {value: null, status: lock_in_NOW04_L1_before_engineering}
+        schema_hashes_and_migration_checksums: {value: null, status: record_with_formal_implementation_not_fake_l0_input}
+        owner_source: release-scope.yaml:version_selection
+      pg_test_proposal:
+        revision: pg-local-v1
+        status: pending_named_owner_approval
+        plan_ref: implementation_plan_section_6_1
+        approval_ref: null
+        isolated_disposable_test_database: required_not_yet_authorized
+        controlled_dsn_reference: pending_no_secret_value_requested
+        cpu_memory_connection_headroom_and_window: pending_environment_owner_registration
+        existing_database_destructive_use: prohibited_without_explicit_authorization
+        app_role_non_owner_and_no_inherited_ddl: verify_after_formal_migration
+        database_changes_performed: false
+        connection_budget: {total: 12, api: 2, worker_data: 4, worker_recovery: 2, test: 2, migration: 1, diagnostic: 1}
+        timeout_ms: {lock: 1000, statement: 3000, transaction: 5000, migration_statement: 30000}
+        transaction_retry: {maximum_attempts: 3, total_budget_ms: 5000, same_key: true}
+        concurrency: {execute: 4, read: 2}
+        partitions:
+          scm: {weight: 4, maximum: 2, reserved: 1}
+          runner: {weight: 4, maximum: 2, reserved: 1}
+          message: {weight: 1, maximum: 1}
+        polling: {interval_ms: 1000, jitter_max_ms: 200, claim_batch: 20, recovery_batch: 10}
+        fixture: {tenants: 2, ready_per_tenant_scm_or_runner: 1, failing_messages: 10000, message_response: 429, slow_response_ms: 2000, provider_timeout_ms: 3000, sending_lease_ms: 10000, warmup_seconds: 60, measure_seconds: 600}
+        thresholds_ms: {ready_wait_p95: 5000, ready_wait_max: 15000, expired_to_unknown_max: 5000, control_connection_wait_max: 1000}
+        ready_wait_scope: bounded_scm_runner_and_at_most_one_ready_read_per_tenant
+        message_backlog_rule: eligible_claim_gap_per_tenant_max_15000ms_not_full_backlog_drain_deadline
+        correctness: {cross_tenant_access: 0, duplicate_effect: 0, silent_loss: 0}
+        minimum_samples_per_partition: 100
+        percentile: nearest_rank_ceil_0_95_N
+        unfinished_tasks: bounded_queue_age_in_max; message_eligible_interval_edges_and_claim_gaps; no_progress_fails
+        adjustment: new_revision_and_approval_before_rerun_preserve_prior_failures
+      runtime_acceptance:
+        NOW04_engineering: {stage: L1, result: not_run}
+        independent_connections_and_formal_migrations: {stage: NOW05, result: not_run}
+        PG_G01_to_G12: {stage: NOW05, result: not_run}
+        integrated_fairness: {stage: NOW06, result: not_run}
+        actual_report_ref: null
     input_hashes: []
     command:
       version: registration_only
       argv: null
     output_hashes: []
     result: blocked
-    reason: 已记录 PostgreSQL server_version_num=150013、数据库/用户/Schema、read committed、角色非 superuser 且不可绕过 RLS；仍缺第二独立连接、固定阈值及原始报告引用
+    reason: 复用已报告 PostgreSQL 150013/read committed/非特权属性；L0 仅待独立测试环境授权、连接预算/pg-local-v1 阈值和文档纪律批准；正式迁移、两独立连接及 PG-G01～12 报告属于 NOW05，公平整合报告属于 NOW06，均 not_run 而非开发前阻塞
     evidence_ref: issue://VTR-7/G04-inputs-required
 
 acceptance:
@@ -376,5 +471,13 @@ acceptance:
   - scope revision and release-scope sha256 are approved by named product and technical principals
   - G02 DEFERRED is effective only after signed binding to this scope revision
   - G01/G03/G04 inputs are supplied through controlled non-secret references
+  - G03 closes with named admin configuration authorization and capability evidence; L2 product logs are not a prerequisite
+  - G04 closes with document discipline and approved environment budget thresholds; NOW05 and NOW06 runtime reports are not prerequisites
+  - future app bot choice does not change signed L1 snapshot bytes or enable L2 modules
   - no product code, external send, IdP mutation, database creation, or production operation is performed by NOW-01
   current_exit: blocked
+  remaining_l0_blockers:
+  - G03 administrator registration_mapping_version_and_app_bot_credential_authorization_capability_confirmation
+  - G04 isolated_test_environment_permission_budget_threshold_and_document_approval
+  next_allowed_action: obtain_confirmations_update_only_existing_plan_and_index_no_product_or_database_execution
+  l1_start_requires: all_l0_exit_conditions_met_and_leader_creates_separate_development_stage
