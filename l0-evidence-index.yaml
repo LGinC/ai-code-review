@@ -130,30 +130,34 @@ entries:
       script_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       script_argv_status: empty_due_to_automatic_Args_collision
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
-      latest_run_meta_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181
-      latest_run_meta_sha256: 9d9d7d3ec11686b7102f0855e2a2560bc9516ed8d1f2e1973f102d50531e97e8
-      latest_run_evidence_ref: issue://VTR-7/comment/01a0af45-b209-79b0-a69c-150990a329d9
-      latest_success_argv_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181#success.argv
-      latest_success_json_ref: attachment://01a0af45-6d20-701f-8648-0de763ccf004
-      latest_success_json_sha256: b0bd77d8ec11ba0eb073daaa58c84d2f329f201d6ce454de2770e9f508234207
-      latest_success_status: skipped_no_items
-      latest_success_stdout_ref: attachment://01a0af45-40e8-776e-945e-d2fbce19a4ff
-      latest_success_stderr_ref: attachment://01a0af45-5b83-799b-b3a6-8637f2842ed3
+      latest_run_meta_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0
+      latest_run_meta_sha256: 50a4221430b65835f40184d7951b6bdf50e728dbbc8622993b60465cf2c44735
+      latest_run_evidence_ref: issue://VTR-7/comment/01a0b1fc-b2c1-76d3-9f9a-958f5148cb06
+      latest_success_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#success.argv
+      latest_success_json_ref: attachment://01a0b1fc-96da-78b3-b3ae-3fb7ae515c9f
+      latest_success_json_sha256: b0a2893b695c71b45388bbe27a64de3d3fca2d1f8a615a7950ea8adc3fccc441
+      latest_success_status: failed_all_selected_items
+      latest_success_stdout_ref: attachment://01a0b1fc-abe2-7155-bfe2-4416defa169e
+      latest_success_stderr_ref: attachment://01a0b1fc-a133-7ad1-9da4-2715da382ede
       latest_success_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      latest_success_stderr_sha256: 14810bed6bac90e5c0aca23411147ebbe5f1b1c3cb1b1ff6c4e679052700e7c8
-      latest_success_exit_code: 0
-      latest_failure_argv_ref: attachment://01a0af45-8df3-730e-a0d5-a84dc2b4a181#failure.argv
-      latest_failure_stdout_ref: attachment://01a0af45-79e5-7d71-9c26-e2bde66e881d
-      latest_failure_stderr_ref: attachment://01a0af45-9a19-7baa-bb30-07431786977e
+      latest_success_stderr_sha256: aae2a827729affa685bf1cab96e2cbaa62106aaa448c815eb248e6b2fbfcc11b
+      latest_success_exit_code: 1
+      latest_failure_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#failure.argv
+      latest_failure_stdout_ref: attachment://01a0b1fc-8d7d-7855-9c53-0c9ca45f99c3
+      latest_failure_stderr_ref: attachment://01a0b1fc-7242-7a8b-85eb-6f87b36a84f3
       latest_failure_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       latest_failure_stderr_sha256: 065e7e79e482f30b83be02bc1e0101fe45dbed154f3c938cc062155c8e892c49
       latest_failure_exit_code: 1
       latest_failure_json_status: not_generated
-      latest_resolved_range: a71afbae64325753d21e781f3959f9ecb59dd9c0..a71afbae64325753d21e781f3959f9ecb59dd9c0
-      latest_review_selection: none
-      latest_observation: success_command_valid_but_review_skipped_due_base_equals_head
+      latest_resolved_range: 5d6a0e9ded38b1ab2174dc5110bc5035d2ceb331..79520dba2e7899f73478e78042e90c772edd8225
+      latest_review_selection: 2
+      latest_review_completed: 0
+      latest_review_failed: 2
+      latest_run_id: d1e696d2-5bb8-4fa9-87c2-affa85a72224
+      latest_source_artifact_sha256: 4fd490be5733116c356a618baf98a5d9313082d8de1127e7df9d2eb2aeef610b
+      latest_observation: review_range_valid_but_all_selected_files_timed_out
     result: blocked
-    reason: 最新脚本已正确传入 argv，但 success 使用 main..HEAD 且两者均为 a71afbae，OCR 正确返回 skipped/no items（exit_code=0）；failure 的 invalid ref 返回 exit_code=1 且无 JSON。最新附件已绑定，G01 仍需选择有实际差异的固定 base/head 执行成功 Review，并补批准 Runner/发行物信息
+    reason: 最新脚本已正确传入有差异的 base/head，success 选择 2 个文件但均因 30 分钟超时失败（exit_code=1、无 finding）；failure invalid ref 也已保留。最新附件已绑定，G01 仍需受控 Runner/发行物与可完成的成功 Review 结果，继续保持 blocked
 
   - gate_id: G02
     name: scan_scope_decision
