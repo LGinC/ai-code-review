@@ -55,12 +55,16 @@ entries:
       sample_repository: workspace_controlled_attachment
       sample_base_sha: a71afbae64325753d21e781f3959f9ecb59dd9c0
       sample_head_sha: a71afbae64325753d21e781f3959f9ecb59dd9c0
-      approved_ocr_release: null
+      approved_ocr_release: open-code-review-v1.12.5
       runner_image_digest: null
       runner_environment: local-controlled
-      binary_sha256: null
-      native_executable_status: unavailable_in_npm_install
-      ocr_release_reported: open-code-review v1.12.4
+      binary_sha256: a9c29355f4b540b809e0b032a3299b7acfc9fb7fbfdf84ef5673c8457e518f9b
+      native_executable_status: available_user_reported
+      ocr_release_reported: open-code-review v1.12.5
+      release_source_ref: https://github.com/alibaba/open-code-review/releases/tag/v1.12.5
+      runner_binding_approval_ref: issue://VTR-7/comment/01a0b3d4-e9e4-7714-b5dc-302d22e02c8c
+      runner_binding_approved_by: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+      runner_binding_approved_at_utc: 2026-09-18T09:24:30Z
       ocr_build_ref: f1101fd7f
       ocr_built_at_utc: 2026-09-16T09:58:39Z
       launcher_kind: npm_javascript
@@ -88,7 +92,7 @@ entries:
         does_not_prove: fixed_review_sample_or_runner_probe
     input_hashes: []
     command:
-      version: v1.12.4
+      version: v1.12.5
       argv: null
       tool: ocr
       subcommand: review
@@ -161,8 +165,8 @@ entries:
       latest_source_artifact_sha256: 4fd490be5733116c356a618baf98a5d9313082d8de1127e7df9d2eb2aeef610b
       latest_observation: review_complete_two_items_zero_findings
 
-    result: blocked
-    reason: 最新 Review 已完成 2 个文件且 0 finding；成功探针脚本已提供完整 argv，但 Runner 仍为 local-controlled、发行物未批准，失败/成功证据口径仍待补齐，G01 暂不通过
+    result: pass
+    reason: G01 Review 已完成 2 个文件且 0 finding；v1.12.5 Release、ocr.exe SHA256、local-controlled Runner 及具名批准已绑定本 scope revision/hash，G01 通过
   - gate_id: G02
     name: scan_scope_decision
     scope_revision: L1-core-now01-r1
