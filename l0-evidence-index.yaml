@@ -132,15 +132,15 @@ entries:
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
       latest_run_meta_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0
       latest_run_meta_sha256: 50a4221430b65835f40184d7951b6bdf50e728dbbc8622993b60465cf2c44735
-      latest_run_evidence_ref: issue://VTR-7/comment/01a0b1fc-b2c1-76d3-9f9a-958f5148cb06
+      latest_run_evidence_ref: issue://VTR-7/comment/01a0b2bb-9e7e-7022-99e6-300e65423295
       latest_success_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#success.argv
-      latest_success_json_ref: attachment://01a0b1fc-96da-78b3-b3ae-3fb7ae515c9f
-      latest_success_json_sha256: b0a2893b695c71b45388bbe27a64de3d3fca2d1f8a615a7950ea8adc3fccc441
-      latest_success_status: failed_all_selected_items
+      latest_success_json_ref: attachment://01a0b2bb-77c9-79f1-a81d-00630920691a
+      latest_success_json_sha256: 636b50d7111648249ad124e478e501ab88e82db81d926e598e0d1e14579e92b6
+      latest_success_status: failed_all_selected_items_provider
       latest_success_stdout_ref: attachment://01a0b1fc-abe2-7155-bfe2-4416defa169e
-      latest_success_stderr_ref: attachment://01a0b1fc-a133-7ad1-9da4-2715da382ede
+      latest_success_stderr_ref: attachment://01a0b2bb-8e33-7f1b-8927-4f4c3a588c52
       latest_success_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      latest_success_stderr_sha256: aae2a827729affa685bf1cab96e2cbaa62106aaa448c815eb248e6b2fbfcc11b
+      latest_success_stderr_sha256: 7331286f54c0f81a8fde8ca2f18e226053c89ab36688d2614592a2030e57cd24
       latest_success_exit_code: 1
       latest_failure_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#failure.argv
       latest_failure_stdout_ref: attachment://01a0b1fc-8d7d-7855-9c53-0c9ca45f99c3
@@ -153,11 +153,15 @@ entries:
       latest_review_selection: 2
       latest_review_completed: 0
       latest_review_failed: 2
-      latest_run_id: d1e696d2-5bb8-4fa9-87c2-affa85a72224
+      latest_run_id: 351337c2-6018-46fd-98ab-4e5ee173a428
+      latest_ocr_version: v1.12.5
+      latest_provider: openai
+      latest_model: grok-4.6
+      latest_runtime_config_sha256: ed34a36ffff0eb5b5d7460bbb7ee1a4d66d9a7479955ddf5a0653337182dd97f
       latest_source_artifact_sha256: 4fd490be5733116c356a618baf98a5d9313082d8de1127e7df9d2eb2aeef610b
-      latest_observation: review_range_valid_but_all_selected_files_timed_out
+      latest_observation: valid_range_but_all_review_subtasks_failed_provider_configuration
     result: blocked
-    reason: 最新脚本已正确传入有差异的 base/head，success 选择 2 个文件但均因 30 分钟超时失败（exit_code=1、无 finding）；failure invalid ref 也已保留。最新附件已绑定，G01 仍需受控 Runner/发行物与可完成的成功 Review 结果，继续保持 blocked
+    reason: 最新有差异 Review 选中 2 个文件，但两个子任务均因 provider/API 配置失败；success JSON 为 failed、exit_code=1，无 finding。失败链路已绑定，G01 仍需可完成的成功 Review 和批准 Runner/发行物
 
   - gate_id: G02
     name: scan_scope_decision
