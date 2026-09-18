@@ -7,6 +7,12 @@ scope:
   sha256: 73ff6695c5319ed559f95a2df89b834ded2894bc8086d7b92e0a3ab74b5610f6
   approval_ref: issue://VTR-7/comment/01a0a98a-8f89-79da-84b5-267faae892ac
   approval_status: approved
+  scope_file_status_at_registration: blocked_pending_approval
+  approval_relation:
+    status: approved_binding_is_recorded_here
+    note: release-scope.yaml is the signed scope snapshot and its historical status fields are not rewritten by NOW-03; this index records the later approval binding without changing the signed file or its hash.
+  approved_by: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+  approved_at_utc: 2026-09-16T09:27:05Z
 approved_by: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
 approved_at_utc: 2026-09-16T09:27:05Z
 registered_at_utc: 2026-09-16T07:59:36Z
@@ -29,13 +35,14 @@ recording_policy:
   missing_evidence: never_mark_pass
   candidate_registration: prohibited_until_verified
 secret_delivery:
-  selected_option: 1
-  provider_class: secret_manager_vault_kms
+  selected_option: 2
+  provider_class: local_environment_variables
   selected_by: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
-  selection_ref: issue://VTR-7/comment/01a0a994-ff7a-7bbe-acaf-f036392d61ae
-  status: reference_pending_backend_configuration
-  plaintext_secret_policy: prohibited
+  selection_ref: issue://VTR-7/comment/01a0b446-26dc-73ac-8ef2-ac2b99d25d3f
+  status: approved_for_local_testing_only
+  plaintext_secret_policy: prohibited_from_repository_issue_and_logs
   repository_storage: reference_only
+  promotion_requires: managed_secret_reference_before_shared_or_production_use
 
 entries:
   - gate_id: G01
@@ -207,35 +214,116 @@ entries:
     reviewer:
       role: 测试负责人
       agent_id: 09c61ea1-d9b3-435a-9bf9-5ca318f1bcfd
-    recorded_at_utc: 2026-09-16T07:59:36Z
+    recorded_at_utc: 2026-09-18T12:25:33Z
     inputs:
-      oidc_provider: corporate_oidc_selected_but_instance_unknown
-      oidc_issuer_or_discovery: null
-      oidc_callback: null
-      oidc_client_type: null
-      oidc_claims_and_admission: null
-      oidc_test_environment: null
-      oidc_configuration_status: deferred_to_backend_project_configuration
-      oidc_configuration_evidence_ref: issue://VTR-7/comment/01a0ad68-ef01-770b-b533-dd6b93be09ef
-      oidc_secret_delivery: secret_manager_vault_kms_reference
+      oidc_provider: corporate_oidc
+      oidc_provider_instance: sso.vtrgo.cn
+      oidc_provider_version: not_provided
+      oidc_provider_version_status: not_run
+      oidc_protocol: oidc
+      oidc_security_profile: oauth21_required_by_design
+      oidc_discovery_url: https://sso.vtrgo.cn/.well-known/openid-configuration
+      oidc_issuer: https://sso.vtrgo.cn/
+      oidc_authorization_endpoint: https://sso.vtrgo.cn/connect/authorize
+      oidc_token_endpoint: https://sso.vtrgo.cn/connect/token
+      oidc_jwks_uri: https://sso.vtrgo.cn/.well-known/jwks
+      oidc_userinfo_endpoint: https://sso.vtrgo.cn/connect/userinfo
+      oidc_end_session_endpoint: https://sso.vtrgo.cn/connect/endsession
+      oidc_discovery_source: public_discovery_read_2026-09-18
+      oidc_discovery_capabilities:
+        grant_types: [authorization_code, refresh_token, client_credentials]
+        response_types: [code]
+        token_endpoint_auth_methods: [client_secret_post, private_key_jwt, client_secret_basic]
+        signing_algorithms: [RS256]
+        code_challenge_methods: [plain, S256]
+        advertised_scopes: [openid, offline_access, email, profile]
+        advertised_claims: [aud, exp, iat, iss, sub]
+        roles_scope_advertised: false
+        roles_claim_advertised: false
+      oidc_client_type: confidential_server_side
+      oidc_client_type_basis: client_secret_present_and_design_requires_server_side_bff
+      oidc_client_type_registration_status: not_verified_from_idp_registration
+      oidc_grant_type: authorization_code
+      oidc_client_id: ai-devops
+      oidc_redirect_uri: https://ai-devops.vtrgo.cn/signin/callback
+      oidc_requested_scopes: [email, profile, roles, ai-devops]
+      oidc_openid_scope_required: true
+      oidc_openid_scope_configured_status: not_verified
+      oidc_requested_scopes_not_advertised: [roles, ai-devops]
+      oidc_claims: [sub, roles]
+      oidc_claim_contract:
+        subject: sub_required
+        roles: roles_required
+        allowed_roles: [admin]
+        audience: ai-devops
+        issuer: https://sso.vtrgo.cn/
+        tenant_mapping: not_provided
+      oidc_flow_contract:
+        authorization_code: required
+        pkce: S256_required
+        state: one_time_server_bound_and_atomically_consumed
+        nonce: one_time_server_bound_and_verified
+        callback_match: exact_registered_redirect_uri
+        token_storage: server_side_only
+        browser_token_storage: prohibited
+      oidc_revocation_contract:
+        local_logout: immediate_session_revocation_required
+        permission_recheck: before_sensitive_operation_required
+        idp_logout_endpoint: available_from_discovery_but_not_product_tested
+        token_revocation: not_provided
+      oidc_environment: local_controlled_test_only
+      oidc_secret_delivery: local_environment_variable
+      oidc_secret_status: user_reported_present
       oidc_secret_ref: null
+      oidc_secret_approval_ref: issue://VTR-7/comment/01a0b446-26dc-73ac-8ef2-ac2b99d25d3f
+      oidc_configuration_facts_status: recorded_user_reported_and_discovery_verified
+      oidc_environment_presence_evidence_ref: issue://VTR-7/comment/01a0b468-6223-72ee-97ec-b169ba54ff3a
+      oidc_discovery_issuer_match: pass_user_reported
+      oidc_discovery_issuer_match_evidence_ref: issue://VTR-7/comment/01a0b46d-f1e8-7d68-ae7c-fc096682bb05
+      oidc_jwks_https: pass_user_reported
+      oidc_jwks_keys_present: pass_user_reported
+      oidc_discovery_jwks_evidence_ref: issue://VTR-7/comment/01a0b46d-f1e8-7d68-ae7c-fc096682bb05
+      oidc_product_flow_status: not_run
+      oidc_product_flow_reason: login_page_bff_and_callback_handler_are_not_implemented
+      oidc_product_flow_evidence_ref: issue://VTR-7/comment/01a0b471-b597-7137-8943-75b35776e233
+      oidc_provider_capability_status: partially_verified
+      oidc_provider_capability_gap: roles_and_ai-devops_scope_claim_support_not_advertised_and_requires_idp_admin_confirmation
+      feishu_mode_candidate: custom_webhook_bot
+      feishu_mode: unconfirmed_webhook_or_app_bot
+      feishu_mode_status: not_proven_by_app_id_and_chat_id_alone
       feishu_credential_delivery: secret_manager_vault_kms_reference
-      secret_selection_ref: issue://VTR-7/comment/01a0a994-ff7a-7bbe-acaf-f036392d61ae
-      feishu_mode: custom_webhook_bot
-      feishu_destination_ref: null
-      feishu_admin: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
       feishu_credential_ref: null
-      feishu_lookup_or_receipt_capability: null
-      send_authorization_scope: null
+      feishu_admin: member:a2b33448-bb71-4ad2-9ff7-20e89b9d2ef7
+      feishu_app_id_status: present_user_reported_controlled_reference_only
+      feishu_chat_id_status: present_user_reported_controlled_reference_only
       feishu_target_identifiers: supplied_in_issue_not_committed
       feishu_target_evidence_ref: issue://VTR-7/comment/01a0a961-018f-7d48-bc36-43747cdbcdfe
+      feishu_webhook_endpoint_ref: null
+      feishu_send_authorization_scope: not_provided
+      feishu_send_authorization_status: blocked_missing_explicit_target_and_message_approval
+      feishu_response_semantics: ack_only_not_verified
+      feishu_lookup_or_receipt_capability: unsupported_not_evidenced
+      feishu_capability_basis: only_app_id_and_chat_id_were_supplied; no_endpoint_credential_or_lookup_receipt_evidence_is_available
       endpoint_storage: controlled_reference_only
+      future_acceptance:
+        oidc:
+        - confirm_idp_registered_client_type_and_exact_redirect_uri
+        - confirm_openid_roles_and_ai-devops_scope_claim_support
+        - run_product_login_callback_with_state_nonce_pkce_s256_and_sub_roles_admin_checks
+        - verify_audience_issuer_session_creation_and_redacted_logs
+        - verify_local_logout_and_sensitive_operation_reauthorization_after_revocation
+        feishu:
+        - confirm_webhook_or_app_bot_mode_from_provider_registration
+        - provide_controlled_credential_reference_and_explicit_target_send_approval
+        - verify_signature_or_security_setting_and_http_response_semantics
+        - record_lookup_or_receipt_capability_as_supported_or_unsupported
+        - if_lookup_is_unsupported_keep_ack_only_and_require_manual_evidence; never_auto_retry_unknown
     input_hashes: []
     command:
       version: registration_only
       argv: null
     result: blocked
-    reason: OIDC 配置明确延期至后端项目配置；Secret 仅接受受控引用，实际入口、凭据引用、发送授权和查证能力未提供，不执行外部副作用
+    reason: OIDC 非秘密配置、Discovery/JWKS 事实和本机临时 Secret 批准已分层记录；产品登录链路尚未实现，OIDC roles/ai-devops 能力及 Feishu 实际模式、凭据引用、发送授权和查证能力仍未取得，因此不执行外部副作用
     evidence_ref: issue://VTR-7/G03-inputs-required
 
   - gate_id: G04
