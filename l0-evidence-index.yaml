@@ -131,8 +131,9 @@ entries:
       script_argv_status: empty_due_to_automatic_Args_collision
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
       latest_run_evidence_ref: issue://VTR-7/comment/01a0b3ab-02ad-74f8-bf2d-82bb6bbeb94c
-      latest_success_argv_ref: null
-      latest_success_argv_status: not_attached; range recorded in manifest
+      latest_success_argv_ref: attachment://01a0b3af-c508-7dab-97c4-ad64419d1785
+      latest_success_argv_status: attached_success_ps1
+      latest_success_script_sha256: 798623bf5910980093a4fe8f37a4a966de4a994bfb6e491b34117403bdc3c9a2
       latest_success_json_ref: attachment://01a0b3aa-e1e8-73ec-ac1f-c9589290bfb7
       latest_success_json_sha256: 32af562d59319e2459e1310430e3b266f1741577fa682daed3601e9c59e68f4b
       latest_success_status: complete
@@ -161,7 +162,7 @@ entries:
       latest_observation: review_complete_two_items_zero_findings
 
     result: blocked
-    reason: 最新 Review 已完成 2 个文件且 0 finding；但 argv 未作为附件提供，Runner 仍为 local-controlled、发行物未批准，成功与失败证据口径仍待补齐，G01 暂不通过
+    reason: 最新 Review 已完成 2 个文件且 0 finding；成功探针脚本已提供完整 argv，但 Runner 仍为 local-controlled、发行物未批准，失败/成功证据口径仍待补齐，G01 暂不通过
   - gate_id: G02
     name: scan_scope_decision
     scope_revision: L1-core-now01-r1
