@@ -130,18 +130,17 @@ entries:
       script_stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       script_argv_status: empty_due_to_automatic_Args_collision
       script_observation: both_invocations_ran_top_level_ocr_help_not_review
-      latest_run_meta_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0
-      latest_run_meta_sha256: 50a4221430b65835f40184d7951b6bdf50e728dbbc8622993b60465cf2c44735
-      latest_run_evidence_ref: issue://VTR-7/comment/01a0b2bb-9e7e-7022-99e6-300e65423295
-      latest_success_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#success.argv
-      latest_success_json_ref: attachment://01a0b2bb-77c9-79f1-a81d-00630920691a
-      latest_success_json_sha256: 636b50d7111648249ad124e478e501ab88e82db81d926e598e0d1e14579e92b6
-      latest_success_status: failed_all_selected_items_provider
-      latest_success_stdout_ref: attachment://01a0b1fc-abe2-7155-bfe2-4416defa169e
-      latest_success_stderr_ref: attachment://01a0b2bb-8e33-7f1b-8927-4f4c3a588c52
+      latest_run_evidence_ref: issue://VTR-7/comment/01a0b3ab-02ad-74f8-bf2d-82bb6bbeb94c
+      latest_success_argv_ref: null
+      latest_success_argv_status: not_attached; range recorded in manifest
+      latest_success_json_ref: attachment://01a0b3aa-e1e8-73ec-ac1f-c9589290bfb7
+      latest_success_json_sha256: 32af562d59319e2459e1310430e3b266f1741577fa682daed3601e9c59e68f4b
+      latest_success_status: complete
+      latest_success_stdout_ref: attachment://01a0b3aa-f7b5-7985-8d21-40992ca81fc9
+      latest_success_stderr_ref: attachment://01a0b3aa-ed72-789f-ab2e-d57a56ae1812
       latest_success_stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
-      latest_success_stderr_sha256: 7331286f54c0f81a8fde8ca2f18e226053c89ab36688d2614592a2030e57cd24
-      latest_success_exit_code: 1
+      latest_success_stderr_sha256: 14810bed6bac90e5c0aca23411147ebbe5f1b1c3cb1b1ff6c4e679052700e7c8
+      latest_success_exit_code: null
       latest_failure_argv_ref: attachment://01a0b1fc-80ef-781c-8010-0287997783e0#failure.argv
       latest_failure_stdout_ref: attachment://01a0b1fc-8d7d-7855-9c53-0c9ca45f99c3
       latest_failure_stderr_ref: attachment://01a0b1fc-7242-7a8b-85eb-6f87b36a84f3
@@ -151,18 +150,18 @@ entries:
       latest_failure_json_status: not_generated
       latest_resolved_range: 5d6a0e9ded38b1ab2174dc5110bc5035d2ceb331..79520dba2e7899f73478e78042e90c772edd8225
       latest_review_selection: 2
-      latest_review_completed: 0
-      latest_review_failed: 2
-      latest_run_id: 351337c2-6018-46fd-98ab-4e5ee173a428
+      latest_review_completed: 2
+      latest_review_failed: 0
+      latest_run_id: b812e59f-41f6-4a59-a61f-3984572ebc35
       latest_ocr_version: v1.12.5
-      latest_provider: openai
-      latest_model: grok-4.6
-      latest_runtime_config_sha256: ed34a36ffff0eb5b5d7460bbb7ee1a4d66d9a7479955ddf5a0653337182dd97f
+      latest_provider: openai-responses
+      latest_model: gpt-5.6-sol
+      latest_runtime_config_sha256: 96df14e97c131f81ac32e2f0fc943c28d542ae0b68cc9803ac5c78c22cb2dd90
       latest_source_artifact_sha256: 4fd490be5733116c356a618baf98a5d9313082d8de1127e7df9d2eb2aeef610b
-      latest_observation: valid_range_but_all_review_subtasks_failed_provider_configuration
-    result: blocked
-    reason: 最新有差异 Review 选中 2 个文件，但两个子任务均因 provider/API 配置失败；success JSON 为 failed、exit_code=1，无 finding。失败链路已绑定，G01 仍需可完成的成功 Review 和批准 Runner/发行物
+      latest_observation: review_complete_two_items_zero_findings
 
+    result: blocked
+    reason: 最新 Review 已完成 2 个文件且 0 finding；但 argv 未作为附件提供，Runner 仍为 local-controlled、发行物未批准，成功与失败证据口径仍待补齐，G01 暂不通过
   - gate_id: G02
     name: scan_scope_decision
     scope_revision: L1-core-now01-r1
